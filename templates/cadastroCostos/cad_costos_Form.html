@@ -1,0 +1,172 @@
+{% extends 'base/base.html' %}
+{% block Head2 %}
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+<style>
+    #tableForms{
+        border: 1px solid #ccc;
+        border-radius: 15px;
+        padding: 30px;
+    }
+
+</style>
+<form id="formPost" method="post">
+
+
+
+        <table id="tableForms" >
+            <tr>
+                <td><h2>Salida de Stock</h2><table>{{ form.as_table }}</table></td>
+                <td><h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         </h2></td>
+                <td><h2><br>Estado de Stock<br></h2><table>{{ form2.as_table }}</table></td>
+            </tr>
+        </table>
+    {% csrf_token %}
+
+    <br>
+    <br>
+
+    <button id="GuardarSalida" name="Guarda_Salida" type="submit" class="btn btn-primary">Salida Parcial</button>
+    {% block cancelar %}
+        <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_stock_salida_listar' %}">Cancelar</a>
+    {% endblock %}
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="BajaTotal"name="Baja_Total" type="submit" class="btn btn-primary btn-lg">Baja Total</button>
+
+
+</form>
+
+{% endblock %}
+
+{% block scripts%}
+    <script>
+     var inicial_cantidad_mov  = $("#id_cantidad_mov").val();
+     var inicial_id_valor_insumo  = $("#id_valor_insumo").val();
+     $( document ).ready(function() {
+        console.log('ING/SAL')
+        console.log($("#id_ind_ing_sal").val())
+        $('label[for=id_ind_ing_sal], input#id_ind_ing_sal').hide();
+
+        $('#id_cod_insumo_salida').val($("#id_cod_insumo").val());
+        $('#id_precio_costo').val($("#id_precio_unitario").val());
+        $('#id_modo_pago_c').val($("#id_modo_pago_m").val());
+
+        $("#id_cod_insumo_salida").attr("disabled","disabled")
+        $("#id_precio_costo").attr("disabled","disabled")
+        $("#id_valor_costo").attr("disabled","disabled")
+        $("#id_modo_pago_c").attr("disabled","disabled")
+
+
+        $("#id_cod_insumo").attr("disabled","disabled")
+        $("#id_fec_movimiento").attr("disabled","disabled")
+        $("#id_num_veces").attr("disabled","disabled")
+        $("#id_cantidad_mov").attr("disabled","disabled")
+        $("#id_precio_unitario").attr("disabled","disabled")
+        $("#id_valor_insumo").attr("disabled","disabled")
+        $("#id_ind_ing_sal").attr("disabled","disabled")
+        $("#id_modo_pago_m").attr("disabled","disabled")
+
+        var cantidad_costo = $("#id_cantidad_costo");
+        var cantidad_mov = $("#id_cantidad_mov");
+        var candidad_mov_valor = $("#id_cantidad_mov").val();
+        console.log("Yeagdssds")
+        console.log(candidad_mov_valor)
+
+        var precio_unitario = $("#id_precio_unitario");
+
+        (cantidad_costo).bind('keyup change',function(){
+            var total=isNaN(parseInt(cantidad_costo.val()* $("#id_precio_unitario").val())) ? 0 :(cantidad_costo.val()* $("#id_precio_unitario").val())
+            $("#id_valor_costo").val(total);
+            $('#id_cantidad_mov').val(candidad_mov_valor - $("#id_cantidad_costo").val());
+            var total2=isNaN(parseInt(cantidad_mov.val()* $("#id_precio_unitario").val())) ? 0 :(cantidad_mov.val()* $("#id_precio_unitario").val())
+            console.log("YEAHIN222");
+            $("#id_valor_insumo").val(total2);
+
+
+        });
+
+
+
+
+
+
+
+
+     	console.log("OKOKOK");
+     	var loc = window.location.href
+        if (loc.toLowerCase().search('editar') >=0 ){
+            console.log("Si Hay cadenas");
+            $("#id_cod_insumo").attr("disabled","disabled")
+            $("#id_fec_movimiento").attr("disabled","disabled")
+            $("#id_num_veces").attr("disabled","disabled")
+        }
+
+        else{
+            console.log("NOHAYCADENASd");
+        }
+     	$.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+
+
+    });
+
+
+
+    $('#GuardarSalida').on('click', function() {
+        console.log("pasoasosoaoso")
+        if (($("#id_cantidad_mov").val() <= 0) || ($("#id_cantidad_costo").val() <= 0)){
+            alert('Cantidad de Costo no permitida');
+            event.preventDefault();
+            location.reload();
+        };
+
+        $("#id_ind_ing_sal").val('S');
+
+    });
+
+    $('#BajaTotal').on('click', function() {
+        console.log(inicial_cantidad_mov)
+        console.log(inicial_id_valor_insumo)
+        $("#id_cantidad_costo").val(inicial_cantidad_mov)
+        $("#id_valor_costo").val(inicial_id_valor_insumo);
+
+
+    });
+
+    $('#formPost').keydown(function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            console.log("Enter does nothing")
+            return false;
+        }
+    });
+
+    $('Form').submit(function() {
+        $("#id_cod_insumo_salida").removeAttr("disabled","disabled")
+        $("#id_precio_costo").removeAttr("disabled","disabled")
+        $("#id_valor_costo").removeAttr("disabled","disabled")
+        $("#id_modo_pago_c").removeAttr("disabled","disabled")
+
+
+
+
+
+
+        $("#id_cod_insumo").removeAttr("disabled","disabled")
+        $("#id_fec_movimiento").removeAttr("disabled","disabled")
+        $("#id_num_veces").removeAttr("disabled","disabled")
+        $("#id_cantidad_mov").removeAttr("disabled","disabled")
+        $("#id_precio_unitario").removeAttr("disabled","disabled")
+        $("#id_valor_insumo").removeAttr("disabled","disabled")
+        $("#id_ind_ing_sal").removeAttr("disabled","disabled")
+        $("#id_modo_pago_m").removeAttr("disabled","disabled")
+
+        console.log("HERErerer")
+    });
+  </script>
+{% endblock %}

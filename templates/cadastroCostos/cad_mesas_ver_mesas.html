@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Mesas
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+
+
+
+{% block content %}
+
+  <style>
+    .jumbotron
+    {
+        position: relative;
+    }
+    .btn
+    {
+        margin: 4px 4px;
+
+    }
+    </style>
+
+<div id="divJumbo" class="jumbotron">
+
+
+
+
+</div>
+
+{% endblock %}
+{% block scripts%}
+    <script>
+
+    totalMesas = 8
+    for (var i=1;i<=totalMesas;i++){
+
+        $("#divJumbo").append('<a id ="mesa' + i + '" class="btn btn-success btn-lg" href="/betaNegocio/nuevoMesaIngreso/'+i+'"  value='+i+' >Mesa: ' + i +'</a>');
+
+
+
+    }
+
+      $("[id^=mesa]").on('click', function() {
+        console.log($(this).attr('id'));
+        console.log($(this).val());
+
+
+
+    });
+
+    $( document ).ready(function() {
+     	$(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    	});
+     	console.log("OKOKOK");
+     });
+  </script>
+{% endblock %}
+

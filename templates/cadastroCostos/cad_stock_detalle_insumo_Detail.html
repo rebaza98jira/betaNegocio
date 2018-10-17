@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Inventario Detalle
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div id="formdiv">
+        <table>{{ form.as_table }}</table>
+    </div>
+    <br>
+    <a id="btnEditar" class = "btn btn-info" href="{% url 'betaNegocio:cad_stock_editar' cad_stock.id %}">Editar</a>
+    &nbsp;&nbsp;
+    <a id="btnEliminar" class = "btn btn-danger" href="{% url 'betaNegocio:cad_stock_eliminar' cad_stock.id %}">Eliminar</a>
+    &nbsp;&nbsp;
+    {% block cancelar %}
+        <a class = "btn btn-secondary" href="{% url 'betaNegocio:cad_stock_listar' %}">Volver</a>
+    {% endblock %}
+
+</form>
+
+{% endblock %}
+{% block scripts%}
+    <script>
+    $( document ).ready(function() {
+         var loc = window.location.href;
+         $("#formdiv").find("*").prop("disabled", true);
+        $.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+     });
+
+    $('#btnEditar, #btnELiminar').on('click', function() {
+        if ($("#id_ind_ing_sal").val() == 'S') {
+            alert('Inventario ya tuvo salida, no se puede editar ni eliminar');
+            event.preventDefault();
+        };
+
+
+    });
+
+  </script>
+{% endblock %}

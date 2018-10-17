@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Unidad de Medida
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+<style>
+
+    #formdiv{
+
+    }
+
+</style>
+<form method="post">
+    {% csrf_token %}
+    <div id="formdiv" class="form-group">
+        <table>{{ form.as_table }}</table>
+    </div>
+    <br>
+    <a class="btn btn-primary" href="{% url 'betaNegocio:cad_un_med_editar' cad_un_med.un_med_insumo %}">Editar</a>
+    <a class="btn btn-danger" href="{% url 'betaNegocio:cad_un_med_eliminar' cad_un_med.un_med_insumo %}">Eliminar</a>
+    {% block cancelar %}
+        <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_un_med_listar' %}">Cancelar</a>
+    {% endblock %}
+
+</form>
+
+{% endblock %}
+{% block scripts%}
+    <script>
+    $( document ).ready(function() {
+         var loc = window.location.href;
+         $("#formdiv").find("*").prop("disabled", true);
+     });
+  </script>
+{% endblock %}

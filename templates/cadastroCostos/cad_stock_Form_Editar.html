@@ -1,0 +1,8 @@
+{% extends 'cadastroCostos/cad_stock_Form.html' %}
+
+
+    {% block cancelar %}
+        <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_stock_detalle_insumo' cad_stock.id %}">Cancelar</a>
+    {% endblock %}
+
+

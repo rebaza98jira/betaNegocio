@@ -1,0 +1,89 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Salida de Inventario
+{%endblock%}
+{% block searchList %}
+    <br>
+    <form method="GET" action="" class="form-inline mt-2 mt-md-0">
+        <table>{{ form.as_table }}</table>
+        <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <br>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+<br>
+<br>
+<table class="table table-bordered table-hover">
+	{% csrf_token %}
+
+
+	<thead>
+	<tr>
+		<th hidden scope="col">Registro</th>
+        <th hidden scope="col">Codigo</th>
+		<th scope="col">Nombre</th>
+        <th scope="col">Veces</th>
+        <th scope="col">Ingreso</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Valor</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Pago</th>
+	</tr>
+	</thead>
+	<tbody>
+        {% if object_list %}
+        {% for cad_stock in object_list %}
+		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_costos_crear' cad_stock.id %}">
+			<td hidden>{{cad_stock.id}}</td>
+            <td hidden>{{cad_stock.cod_insumo.cod_insumo}}</tdhidden>
+			<td>{{cad_stock.cod_insumo.nombre_insumo}}</td>
+            <td>{{cad_stock.num_veces}}</td>
+            <td>{{cad_stock.fec_movimiento}}</td>
+            <td>{{cad_stock.cantidad_mov}}</td>
+            <td>{{cad_stock.precio_unitario}}</td>
+            <td>{{cad_stock.valor_insumo}}</td>
+            <td>{{cad_stock.ind_ing_sal}}</td>
+            <td>{{cad_stock.modo_pago_m}}</td>
+
+
+
+		</tr>
+        {% endfor %}
+        {% else %}
+        <h2>No Hay Resultados...</h2>
+        {% endif %}
+	</tbody>
+
+</table>
+
+{% endblock %}
+{% block scripts%}
+    <script>
+    $( document ).ready(function() {
+     	$(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    	});
+     	console.log("OKOKOK");
+     	$.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+
+
+    });
+
+
+
+
+
+  </script>
+{% endblock %}

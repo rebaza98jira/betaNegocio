@@ -1,0 +1,132 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Inventario
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+<form id="formPost" method="post">
+    {% csrf_token %}
+    <table>{{ form.as_table }}</table>
+
+    <br>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    {% block cancelar %}
+        <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_stock_listar' %}">Cancelar</a>
+    {% endblock %}
+
+</form>
+
+{% endblock %}
+
+{% block scripts%}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+     $( document ).ready(function() {
+        var cantidad_mov = $("#id_cantidad_mov");
+        var precio_unitario = $("#id_precio_unitario");
+        console.log("YEAHIN111");
+
+
+        (cantidad_mov).bind('keyup change',function(){
+            var total=isNaN(parseInt(cantidad_mov.val()* $("#id_precio_unitario").val())) ? 0 :(cantidad_mov.val()* $("#id_precio_unitario").val())
+            console.log("YEAHIN222");
+            $("#id_valor_insumo").val(total);
+        });
+
+        (precio_unitario).bind('keyup change',function(){
+            var total=isNaN(parseInt(cantidad_mov.val()* $("#id_precio_unitario").val())) ? 0 :(cantidad_mov.val()* $("#id_precio_unitario").val())
+            console.log("YEAHIN222");
+            $("#id_valor_insumo").val(total);
+        });
+
+
+         $("#id_cod_insumo").change(function(){
+            console.log( $(this).val() );
+            var cod_insumo = $(this).val();
+            var fec_movimiento = $("#id_fec_movimiento").val();
+            $.ajax({
+                url: 'ajax/valida_siguente_vez_fecha/',
+                data: {
+                    'fec_movimiento': fec_movimiento,
+                    'cod_insumo': cod_insumo
+
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("funciono OMG")
+                    console.log(data.numveces)
+                    $("#id_num_veces").val(data.numveces);
+                }
+            });
+
+        });
+
+        $("#id_fec_movimiento").change(function(){
+            console.log( $(this).val() );
+            var fec_movimiento = $(this).val();
+            var cod_insumo = $("#id_cod_insumo").val();
+            $.ajax({
+                url: 'ajax/valida_siguente_vez_fecha/',
+                data: {
+                    'fec_movimiento': fec_movimiento,
+                    'cod_insumo': cod_insumo
+
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("funciono OMG")
+                    console.log(data.numveces)
+                    $("#id_num_veces").val(data.numveces);
+
+                }
+            });
+
+        });
+
+
+
+
+
+
+     	console.log("OKOKOK");
+     	var loc = window.location.href
+        if (loc.toLowerCase().search('editar') >=0 ){
+            console.log("Si Hay cadenas");
+            $("#id_cod_insumo").attr("disabled","disabled")
+            $("#id_fec_movimiento").attr("disabled","disabled")
+        }
+
+        else{
+            console.log("NOHAYCADENASd");
+        }
+     	$.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+
+
+    });
+
+    $('#formPost').keydown(function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            console.log("Enter does nothing")
+            return false;
+        }
+    });
+
+
+
+    $('Form').submit(function() {
+        $('#id_cod_insumo').removeAttr('disabled');
+        $('#id_fec_movimiento').removeAttr('disabled');
+
+        console.log("HERErerer")
+    });
+  </script>
+{% endblock %}

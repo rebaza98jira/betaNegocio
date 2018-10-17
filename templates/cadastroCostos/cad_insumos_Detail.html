@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Ingreso de Inventario
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+<form id="formPost" method="post">
+    {% csrf_token %}
+    <div id="formdiv">
+        <table>{{ form.as_table }}</table>
+    </div>
+    <br>
+    <a class="btn btn-primary" href="{% url 'betaNegocio:cad_insumos_editar' cad_insumos.cod_insumo %}">Editar</a>
+    <a class="btn btn-danger" href="{% url 'betaNegocio:cad_insumos_eliminar' cad_insumos.cod_insumo %}">Eliminar</a>
+    {% block cancelar %}
+        <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_insumos_listar' %}">Cancelar</a>
+    {% endblock %}
+
+</form>
+
+{% endblock %}
+{% block scripts%}
+
+    <script>
+    $( document ).ready(function() {
+         var loc = window.location.href;
+        $('label[for=id_precio_venta], input#id_precio_venta').hide();
+         if (($("#id_ind_C_V_A").val() == 'A') || ($("#id_ind_C_V_A").val() == 'V')){
+            console.log("OVERYEAH")
+             $('label[for=id_precio_venta], input#id_precio_venta').show();
+        }
+         $("#formdiv").find("*").prop("disabled", true);
+
+
+         $.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+        $('js-example-basic-single').select2("enable",false)
+
+        console.log("YEADS")
+        console.log($("#id_ind_C_V_A").val())
+        if (($("#id_ind_C_V_A").val() == 'A') || ($("#id_ind_C_V_A").val() == 'V')){
+            console.log("OVERYEAH")
+             $('label[for=id_precio_venta], input#id_precio_venta').show();
+        }
+
+     });
+
+     $('#formPost').keydown(function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            console.log("Enter does nothing")
+            return false;
+        }
+    });
+  </script>
+{% endblock %}

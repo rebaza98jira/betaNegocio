@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Unidades de Medida
+{%endblock%}
+
+
+
+{% block content %}
+
+
+<table class="table table-bordered table-hover">
+	{% csrf_token %}
+
+	<thead>
+	<tr>
+		<th scope="col">Codigo</th>
+		<th scope="col">Descripcion</th>
+	</tr>
+	</thead>
+	<tbody>
+        {% if object_list %}
+        {% for cad_un_med in object_list %}
+		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_un_med_detalle' cad_un_med.un_med_insumo %}">
+			<td>{{cad_un_med.un_med_insumo}}</td>
+			<td>{{cad_un_med.descripcion}}</td>
+
+		</tr>
+        {% endfor %}
+        {% else %}
+        <h2>No Hay Resultados...</h2>
+        {% endif %}
+	</tbody>
+
+</table>
+<a class="btn btn-primary" href="{% url 'betaNegocio:cad_un_med_crear' %}">Nueva</a>
+
+{% endblock %}
+{% block scripts%}
+	    <script>
+    $( document ).ready(function() {
+     	$(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    	});
+     	console.log("OKOKOK");
+     });
+  </script>
+{% endblock %}
