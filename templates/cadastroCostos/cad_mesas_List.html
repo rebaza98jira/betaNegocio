@@ -21,6 +21,7 @@
 
 	<thead>
 	<tr>
+        <th scope="col">Codigo</th>
         <th scope="col">Fecha de Trabajo</th>
         <th scope="col">Mesa</th>
         <th scope="col">Veces</th>
@@ -30,7 +31,8 @@
 	<tbody>
         {% if object_list %}
         {% for cad_mesas in object_list %}
-		<tr class="clickable-row" data-href="#">
+		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_mesas_detalle' cad_mesas.slug %}">
+            <td>{{cad_mesas.slug}}</td>
             <td>{{cad_mesas.fecha_trabajo}}</td>
             <td>{{cad_mesas.num_mesa}}</td>
             <td>{{cad_mesas.num_veces}}</td>

@@ -31,6 +31,12 @@ urlpatterns = [
     url(r'^ajax/valida_siguente_vez_fecha_mesa/$', valida_siguente_vez_fecha_mesa, name='valida_siguente_vez_fecha_mesa'),
     url('nuevoMesaDetalleIngreso', Cad_mesas_detalle_Create.as_view(), name='cad_mesa_detalle_crear_ingreso'),
     url(r'^ajax/retorna_insumos_venta/$', retorna_insumos_venta, name='retorna_insumos_venta'),
+    url(r'^ajax/retorna_precio_insumo/$', retorna_precio_insumo, name='retorna_precio_insumo'),
+    url('detalleMesas/(?P<slug>[\w-]+)/$', Cad_mesas_Detalle.as_view(), name='cad_mesas_detalle'),
+    url('listarMaster', Cad_master_List.as_view(), name='cad_master_listar'),
+    url('nuevoMaster', Cad_master_Create.as_view(), name='cad_master_crear'),
+    url('editarMaster/(?P<pk>\d+)/$', Cad_master_Update.as_view(), name='cad_master_editar'),
+    url(r'^ajax/retorna_parametros_master/$', retorna_parametros_master, name='retorna_parametros_master'),
 
     # url(r'^unidad/nuevo$', UnidadCreate.as_view(), name='unidad_crear'),
     # url(r'^unidad/listar$', UnidadList.as_view(), name='unidad_listar'),

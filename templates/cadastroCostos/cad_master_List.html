@@ -1,10 +1,11 @@
 {% extends 'base/base.html' %}
 
 {% block SUBTITLE %}
-    Insumos de Consumo
+    Master
 {%endblock%}
 
-
+{% block searchList %}
+{% endblock %}
 
 {% block content %}
 
@@ -15,21 +16,17 @@
 	<thead>
 	<tr>
 		<th scope="col">Codigo</th>
-		<th scope="col">Nombre</th>
-        <th scope="col">Unidad</th>
-		<th scope="col">Fecha</th>
-		<th scope="col">Tipo</th>
+		<th scope="col">Razon Social</th>
+        <th scope="col">Codigo Tributario</th>
 	</tr>
 	</thead>
 	<tbody>
         {% if object_list %}
-        {% for cad_insumos in object_list %}
-		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_insumos_detalle' cad_insumos.cod_insumo %}">
-			<td>{{cad_insumos.cod_insumo}}</td>
-			<td>{{cad_insumos.nombre_insumo}}</td>
-            <td>{{cad_insumos.un_med_insumo}}</td>
-			<td>{{cad_insumos.fecha_cadastro}}</td>
-			<td>{{cad_insumos.ind_C_V_A}}</td>
+        {% for cad_master in object_list %}
+		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_master_editar' cad_master.id %}">
+            <td>{{cad_master.id}}</td>
+			<td>{{cad_master.razon_social}}</td>
+			<td>{{cad_master.cod_tributario}}</td>
 
 
 		</tr>
@@ -40,7 +37,6 @@
 	</tbody>
 
 </table>
-<a class="btn btn-primary" href="{% url 'betaNegocio:cad_insumos_crear' %}">Nueva</a>
 
 {% endblock %}
 {% block scripts%}

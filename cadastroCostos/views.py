@@ -2,13 +2,14 @@ from django.core import serializers
 import json
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle
+from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master
 from django.db.models import Sum, F, ExpressionWrapper, Max
-from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form
-from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView
+from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView, FormView, View
 from django.urls import reverse_lazy
 from decimal import Decimal
 import pprint
+from django.db.models import Q
 # Create your views here.
 
 def index(request):
@@ -392,11 +393,29 @@ class Cad_mesas_Create(CreateView):
                 print (cabecera.slug)
                 linea=1
                 while (linea <= len(dict_values_detalle['producto'])):
-                    detalle = Cad_V_mesas_detalle( cabecera_id=cabecera.slug, linea=linea, cantidad_venta=dict_values_detalle['cantidad'][linea-1], precio_venta=dict_values_detalle['precio'][linea-1])
+                    detalle = Cad_V_mesas_detalle( cabecera_id=cabecera.slug, linea=linea, cod_insumo_id = dict_values_detalle['producto'][linea-1], cantidad_venta=dict_values_detalle['cantidad'][linea-1], precio_venta=dict_values_detalle['precio'][linea-1])
                     detalle.save()
                     linea +=1
 
             return HttpResponseRedirect(self.get_success_url())
+
+
+class Cad_mesas_Detalle(DetailView, UpdateView):
+    model = Cad_V_mesas
+    form_class = Cad_V_mesas_Detalle_Form
+    template_name = 'cadastroCostos/cad_mesas_Detalle.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print("SLUG MANEJADA")
+        print(self.kwargs['slug'])
+
+        # cadmesasdetalle = Cad_mesas_Detalle.objects.only('slug').get(slug=self.kwargs['slug']).slug
+        context['mov_mesas'] = Cad_V_mesas_detalle.objects.all().filter(cabecera=self.kwargs['slug']).order_by('linea')
+        # context['saldo'] = cantidad_mov_ingresos_suma['cantidad_mov__sum'] - cantidad_mov_salida_suma['cantidad_mov__sum']
+        print (context)
+        return context
+
+
 
 
 
@@ -429,6 +448,68 @@ def valida_siguente_vez_fecha_mesa(request):
 def retorna_insumos_venta(request):
     # alim_nutri_id = request.GET.get('alim_nutri')
     # filtra subnutrientes que no estan linkeados a relacion Alim-Nutri
-    insumos_venta = Cad_insumos.objects.all()
+    insumos_venta = Cad_insumos.objects.filter(~Q(ind_C_V_A='C'))
 
     return render(request, 'cadastroCostos/insumo_select_options.html', {'insumos': insumos_venta})
+
+def retorna_precio_insumo(request):
+    cod_insumo = request.GET.get('cod_insumo', None)
+    precio = Cad_insumos.objects.get(pk=cod_insumo)
+    precio_venta= precio.precio_venta
+    data = {
+        'precio_venta': precio_venta
+    }
+    print("DATA PRECIOS")
+    print (data)
+    return JsonResponse(data)
+
+def retorna_parametros_master(request):
+    master = Cad_Master.objects.all().first()
+    print ("MASTER")
+    print (master)
+    imp_venta = master.imp_venta
+    imp_restaurante = master.imp_restaurante
+    imp_renta = master.imp_renta
+    mesas = master.mesas
+    data = {
+        'imp_venta' : imp_venta,
+        'imp_restaurante' : imp_restaurante,
+        'imp_renta' : imp_renta,
+        'mesas' : mesas,
+    }
+    print("DATA MASTER")
+    print (data)
+    return JsonResponse(data)
+
+
+
+
+class Cad_master_List (ListView):
+    model = Cad_Master
+    template_name = 'cadastroCostos/cad_master_List.html'
+    paginate_by = 10
+
+
+class Cad_master_Create(CreateView):
+    model = Cad_Master
+    form_class = Cad_master_Form
+    template_name = 'cadastroCostos/cad_master_Form.html'
+    success_url = reverse_lazy('betaNegocio:cad_master_listar')
+
+# class Cad_master_Detail(DetailView, UpdateView):
+#     model = Cad_Master
+#     form_class = Cad_master_Form
+#     template_name = 'cadastroCostos/cad_master_Detail.html'
+
+class Cad_master_Update(UpdateView):
+    model = Cad_Master
+    form_class = Cad_master_Form
+    template_name = 'cadastroCostos/cad_master_Form.html'
+    success_url = reverse_lazy('betaNegocio:cad_master_listar')
+
+# class Cad_master_Delete(DeleteView,UpdateView):
+#     model = Cad_Master
+#     form_class = Cad_master_Form
+#     template_name = 'cadastroCostos/cad_master_Delete.html'
+#     success_url = reverse_lazy('betaNegocio:cad_master_listar')
+

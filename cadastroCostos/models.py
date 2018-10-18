@@ -42,10 +42,15 @@ def slug_Save(sender, instance, *args, **kwargs):
         print("SON IGUALES CADMED")
         prefix = 'finanzas'
         nombre_campo = 'id'
-    if sender == Cad_insumos:
+    if sender == Cad_V_mesas_detalle:
         print("SON IGUALES Insumos")
-        prefix = 'insumo'
-        nombre_campo = 'cod_insumo'
+        prefix = 'mesasdetalle'
+        nombre_campo = 'id'
+    if sender == Cad_Master:
+        print("SON IGUALES Insumos")
+        prefix = 'master'
+        nombre_campo = 'id'
+
 
 
 
@@ -291,13 +296,15 @@ post_save.connect(slug_Save, sender=Cad_V_mesas)
 """MESAS DETALLE"""
 
 class Cad_V_mesas_detalle(models.Model):
+    slug = models.SlugField(unique=True)
     cabecera = models.ForeignKey(Cad_V_mesas, to_field='slug', blank=False, null=False, on_delete=models.PROTECT)
     linea = models.SmallIntegerField()
-    # cod_insumo = models.ForeignKey(Cad_insumos, null=False, blank=False, on_delete=models.PROTECT)
+    cod_insumo = models.ForeignKey(Cad_insumos, null=False, blank=False, on_delete=models.PROTECT)
     cantidad_venta = models.SmallIntegerField()
     precio_venta = models.DecimalField(max_digits=12, decimal_places=2)
 
-
+pre_save.connect(slug_Save, sender=Cad_V_mesas_detalle)
+post_save.connect(slug_Save, sender=Cad_V_mesas_detalle)
 
 """FIN MESAS DETALLE"""
 
@@ -328,4 +335,21 @@ pre_save.connect(slug_Save, sender=Cad_est_finan)
 post_save.connect(slug_Save, sender=Cad_est_finan)
 
 """FIN FINANZAS"""
+
+"""MASTER"""
+class Cad_Master(models.Model):
+    slug = models.SlugField(unique=True)
+    cod_tributario = models.CharField(max_length=20)
+    razon_social = models.CharField(max_length=80)
+    giro_negocio = models.CharField(max_length=50)
+    imp_venta = models.DecimalField(max_digits=5, decimal_places=2)
+    imp_restaurante = models.DecimalField(max_digits=5, decimal_places=2)
+    imp_renta = models.DecimalField(max_digits=5, decimal_places=2)
+    mesas = models.SmallIntegerField()
+
+
+pre_save.connect(slug_Save, sender=Cad_Master)
+post_save.connect(slug_Save, sender=Cad_Master)
+
+"""FINMASTER"""
 

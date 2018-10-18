@@ -1,7 +1,7 @@
 from django.db.models import Max
 from django import forms
 from datetime import datetime
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle
+from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master
 from django.db.models import Q
 
 
@@ -229,6 +229,35 @@ class Cad_mesas_Form(forms.ModelForm):
         }
 
 
+class Cad_V_mesas_Detalle_Form(forms.ModelForm):
+
+    class Meta:
+        model = Cad_V_mesas
+
+        fields = [
+            'fecha_trabajo',
+            'num_mesa',
+            'num_veces',
+            'slug',
+            'valor_vendido',
+        ]
+        labels = {
+            'fecha_trabajo': 'Fecha',
+            'num_mesa': '   Mesa',
+            'num_veces': '   Veces',
+            'slug': '   Cabecera',
+            'valor_vendido': 'Valor Vendido',
+        }
+        widgets = {
+            'fecha_trabajo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'num_mesa': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'num_veces': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'readonly':'True'}),
+            'slug':forms.TextInput(attrs={'class': 'form-control','style': 'width:150px'}),
+            'valor_vendido': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+
+        }
+
+
 class Cad_mesas_detalle_Form(forms.ModelForm):
 
     class Meta:
@@ -266,3 +295,39 @@ class Cad_mesas_detalle_Form(forms.ModelForm):
         # self.fields['cod_insumo'].initial = Cad_insumos.get_nextCodigo()
         # self.fields['cabecera'].initial =  Cad_V_mesas.objects.all().values('slug')
         # self.fields['cod_insumo'].initial = Cad_insumos.objects.all().values('nombre_insumo')
+
+
+class Cad_master_Form(forms.ModelForm):
+
+    class Meta:
+        model = Cad_Master
+
+        fields = [
+            'cod_tributario',
+            'razon_social',
+            'giro_negocio',
+            'imp_venta',
+            'imp_restaurante',
+            'imp_renta',
+            'mesas',
+
+        ]
+        labels = {
+            'cod_tributario':'Codigo Tributario',
+            'razon_social': 'Razon Social',
+            'giro_negocio': 'Giro de Negocio',
+            'imp_venta':'Impuesto de Venta',
+            'imp_restaurante':'Impuesto de Restaurante',
+            'imp_renta': 'Impuesto de Renta',
+            'mesas': 'Numero de Mesas',
+        }
+        widgets = {
+            'cod_tributario': forms.TextInput(attrs={'class':'form-control', 'maxlength':'20', 'style': "width:auto"}),
+            'razon_social':forms.TextInput(attrs={'class':'form-control', 'maxlength':'80', 'style': "width:auto"}),
+            'giro_negocio': forms.TextInput(attrs={'class':'form-control', 'maxlength':'50', 'style': "width:auto"}),
+            'imp_venta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'imp_restaurante': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'imp_renta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'mesas': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+        }
+

@@ -47,14 +47,12 @@
     <br>
 
 
-
   <div class="row clearfix">
     <div class="v l-md-12">
       <table class="table table-bordered table-hover" id="tab_logic">
         <thead>
           <tr>
             <th class="text-center"> # </th>
-            <th class="text-center"> Producto LISTA</th>
             <th class="text-center"> Producto </th>
             <th class="text-center"> Cant </th>
             <th class="text-center"> Precio </th>
@@ -64,11 +62,10 @@
         <tbody>
           <tr id='addr0'>
             <td>1</td>
-            <td><select name='productoslc' class="js-example-basic-single"/></td>
-            <td><input type="text" name='producto'  placeholder='Nombre de Producto' class="form-control"/></td>
-            <td><input type="number" name='cantidad' placeholder='Cantidad' class="form-control qty" step="0" min="0"/></td>
-            <td><input type="number" name='precio' placeholder='Precio Unitario' class="form-control price" step="0.00" min="0"/></td>
-            <td><input type="number" name='total' placeholder='0.00' class="form-control total" readonly/></td>
+            <td><select id="prod0" name='producto' class="js-example-basic-single" required /></td>
+            <td><input id="cant0" type="number" name='cantidad' placeholder='Cantidad' required class="form-control qty" step="0" min="0"/></td>
+            <td><input id="prec0" type="number" name='precio' placeholder='Precio Unitario' required class="form-control price" step=".01" /></td>
+            <td><input id="total0" type="number" name='total' placeholder='0.00' class="form-control total" readonly/></td>
           </tr>
           <tr id='addr1'></tr>
         </tbody>
@@ -82,7 +79,6 @@
     </div>
   </div>
 
-
 <div id="divLogical" class="pull-right">
 
     <div class="row clearfix" style="margin-top:20px">
@@ -94,9 +90,16 @@
             <td class="text-center"><input type="number" name='sub_total' placeholder='0.00' class="form-control" id="sub_total" readonly/></td>
           </tr>
           <tr>
-            <th class="text-center">Impuesto</th>
+            <th class="text-center">Impuesto 1</th>
             <td class="text-center"><div class="input-group mb-2 mb-sm-0">
                 <input type="number" class="form-control" id="tax" placeholder="0">
+                <div class="input-group-addon">%</div>
+              </div></td>
+          </tr>
+          <tr>
+            <th class="text-center">Impuesto 2</th>
+            <td class="text-center"><div class="input-group mb-2 mb-sm-0">
+                <input type="number" class="form-control" id="tax2" placeholder="0">
                 <div class="input-group-addon">%</div>
               </div></td>
           </tr>
@@ -140,57 +143,100 @@
         $.ajax({
             url: 'ajax/retorna_insumos_venta/',
             success: function (data) {
-                console.log("funciono OMG277")
                 console.log(data)
                 $('.js-example-basic-single').html(data);
 
-            }
+           }
         });
 
+        $.ajax({
+            url: 'ajax/retorna_parametros_master/',
+            success: function (data) {
+                console.log(data)
+                $('#tax').val(data.imp_venta);
+                $('#tax2').val(data.imp_restaurante);
 
+           }
+        });
+    });
     $('label[for=id_valor_vendido], input#id_valor_vendido').hide();
 
     var fecha_trabajo = $("#id_fecha_trabajo").val();
     var num_mesa = $("#id_num_mesa").val();
     $("#id_valor_vendido").val($("#total_amount").val());
 
-      var i=1;
-      $("#add_row").click(function(){b=i-1;
-          $('#addr'+i).append("<td>1</td><td><select name='productoslc' class='js-example-basic-single'/></td><td><input type='text' name='producto'  placeholder='Nombre de Producto' class='form-control'/></td><td><input type='number' name='cantidad' placeholder='Cantidad' class='form-control qty' step='0' min='0'/></td><td><input type='number' name='precio' placeholder='Precio Unitario' class='form-control price' step='0.00' min='0'/></td><td><input type='number' name='total' placeholder='0.00' class='form-control total' readonly/></td>")
-          $('#addr'+i).find('td:first-child').html(i+1);
-         var linea_actual = $('#addr'+i).find('.js-example-basic-single').select2();
-          $.ajax({
+    var i=1;
+    $("#add_row").click(function(){b=i-1;
+        $('#addr'+i).append("<td>1</td><td><select id='prod"+i+"' name='producto' class='js-example-basic-single' required /></td><td><input type='number' id='cant"+i+"' name='cantidad' placeholder='Cantidad' required class='form-control qty' step='0' min='0'/></td><td><input type='number' id='prec"+i+"' name='precio' placeholder='Precio Unitario' required class='form-control price' step='0.00' min='0'/></td><td><input type='number'id='total"+i+"' name='total' placeholder='0.00' class='form-control total' readonly/></td>")
+        $('#addr'+i).find('td:first-child').html(i+1);
+        var linea_actual = $('#addr'+i).find('.js-example-basic-single').select2({
+            }).on("change", function (e) {
+                var actualIDlinea = $(this).attr("id").replace('prod','');
+                console.log(actualIDlinea);
+                var cod_insumo = ($(this).val());
+                $.ajax({
+                    url: 'ajax/retorna_precio_insumo/',
+                    data: {
+                    'cod_insumo': cod_insumo
+                },
+                    dataType: 'json',
+                    success: function (data) {
+                    console.log("funciono OMG989898")
+                    console.log(data.precio_venta)
+                    console.log($('#prec'+i).val())
+                    $('#prec'+ actualIDlinea).val(data.precio_venta);
+                }
+            });
+        });
+        $.ajax({
             url: 'ajax/retorna_insumos_venta/',
             success: function (data) {
                 console.log("funciono OMG88888")
                 console.log(data)
                  linea_actual.html(data);
-
             }
         });
-
-          $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
-
+        $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
           i++;
-      });
-      $("#delete_row").click(function(){
-          if(i>1){
-          $("#addr"+(i-1)).html('');
-          i--;
-          }
-          calc();
-      });
-
-      $('#tab_logic tbody').on('keyup change',function(){
-          calc();
-      });
-      $('#tax').on('keyup change',function(){
-          calc_total();
-      });
-
-
     });
 
+    $('.js-example-basic-single').on("change", function (e) {
+        var actualIDlinea = $(this).attr("id").replace('prod','');
+        var cod_insumo = ($(this).val());
+        $.ajax({
+                url: 'ajax/retorna_precio_insumo/',
+                data: {
+                'cod_insumo': cod_insumo
+                },
+                dataType: 'json',
+                success: function (data) {
+                console.log("funciono OMG888")
+                console.log(data.precio_venta)
+                $('#prec'+ actualIDlinea).val(data.precio_venta);
+                }
+        });
+    });
+
+
+    $("#delete_row").click(function(){
+        if(i>1){
+            $("#addr"+(i-1)).html('');
+            i--;
+        }
+        calc();
+    });
+
+    $('#tab_logic tbody').on('keyup change',function(){
+        calc();
+    });
+
+    $('#tax').on('keyup change',function(){
+        calc_total();
+    });
+
+    $('#tax2').on('keyup change',function(){
+        calc_total();
+    });
 
     $("#id_fecha_trabajo,#id_num_mesa ").bind('keyup change',function(){
         console.log( $(this).val() );
@@ -222,45 +268,40 @@
             return false;
         }
     });
+
     $('#btnGuardar').on('click', function() {
-        console.log("pasoasosoaoso")
-        $("#id_valor_vendido").val($("#total_amount").val());
+    console.log("pasoasosoaoso")
+    $("#id_valor_vendido").val($("#total_amount").val());
         if (($("#id_valor_vendido").val() <= 0) || ($("#total_amount").val() <= 0)){
             alert('Valor Vendido no permitido');
             event.preventDefault();
         };
-
-
-
     });
 
-
-    function calc()
-    {
-      $('#tab_logic tbody tr').each(function(i, element) {
-          var html = $(this).html();
-          if(html!='')
-          {
-              var qty = $(this).find('.qty').val();
-              var price = $(this).find('.price').val();
-              $(this).find('.total').val(qty*price);
-
-              calc_total();
-          }
-      });
+    function calc(){
+        $('#tab_logic tbody tr').each(function(i, element) {
+            var html = $(this).html();
+            if(html!=''){
+                var qty = $(this).find('.qty').val();
+                var price = $(this).find('.price').val();
+                $(this).find('.total').val(qty*price);
+                calc_total();
+            }
+        });
     }
 
-    function calc_total()
-    {
-      total=0;
-      $('.total').each(function() {
-          total += parseInt($(this).val());
-      });
-      $('#sub_total').val(total.toFixed(2));
-      tax_sum=total/100*$('#tax').val();
-      $('#tax_amount').val(tax_sum.toFixed(2));
-      $('#total_amount').val((tax_sum+total).toFixed(2));
+    function calc_total(){
+        total=0;
+        $('.total').each(function() {
+            total += parseInt($(this).val());
+        });
+        $('#sub_total').val(total.toFixed(2));
+            tax_sum=total/100*$('#tax').val() + total/100*$('#tax2').val();
+        $('#tax_amount').val(tax_sum.toFixed(2));
+        $('#total_amount').val((tax_sum+total).toFixed(2));
     }
+
+
   </script>
 {% endblock %}
 
