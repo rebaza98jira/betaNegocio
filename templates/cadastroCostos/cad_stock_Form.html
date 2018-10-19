@@ -125,8 +125,8 @@
     $('Form').submit(function() {
         $('#id_cod_insumo').removeAttr('disabled');
         $('#id_fec_movimiento').removeAttr('disabled');
-
-        console.log("HERErerer")
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("floatingCirclesG").style.display = "block";
     });
   </script>
 {% endblock %}

@@ -11,6 +11,7 @@
         padding: 30px;
     }
 
+
 </style>
 <form id="formPost" method="post">
 
@@ -146,15 +147,11 @@
         }
     });
 
-    $('Form').submit(function() {
+    $('form').submit(function() {
         $("#id_cod_insumo_salida").removeAttr("disabled","disabled")
         $("#id_precio_costo").removeAttr("disabled","disabled")
         $("#id_valor_costo").removeAttr("disabled","disabled")
         $("#id_modo_pago_c").removeAttr("disabled","disabled")
-
-
-
-
 
 
         $("#id_cod_insumo").removeAttr("disabled","disabled")
@@ -166,7 +163,9 @@
         $("#id_ind_ing_sal").removeAttr("disabled","disabled")
         $("#id_modo_pago_m").removeAttr("disabled","disabled")
 
-        console.log("HERErerer")
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("floatingCirclesG").style.display = "block";
+
     });
   </script>
 {% endblock %}

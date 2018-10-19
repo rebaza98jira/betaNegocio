@@ -58,5 +58,9 @@
             return false;
         }
     });
+     $('form').submit(function() {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("floatingCirclesG").style.display = "block";
+    });
   </script>
 {% endblock %}

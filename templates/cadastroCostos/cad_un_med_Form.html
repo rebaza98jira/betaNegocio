@@ -1,11 +1,13 @@
 {% extends 'base/base.html' %}
-
+{% load static %}
 {% block SUBTITLE %}
     Unidad de Medida
 {%endblock%}
 {% block searchList %}
 {% endblock %}
 {% block content %}
+
+
 <form id="formPost" method="post">
     {% csrf_token %}
     <table>{{ form.as_table }}</table>
@@ -15,6 +17,10 @@
     {% block cancelar %}
         <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_un_med_listar' %}">Cancelar</a>
     {% endblock %}
+
+
+
+
 
 </form>
 
@@ -32,6 +38,11 @@
             console.log("Enter does nothing")
             return false;
         }
+    });
+
+    $('form').submit(function() {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("floatingCirclesG").style.display = "block";
     });
   </script>
 {% endblock %}
