@@ -1,0 +1,74 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Caja
+{%endblock%}
+{% block searchList %}
+
+{% endblock %}
+
+
+{% block content %}
+
+
+
+
+<br>
+<br>
+<table class="table table-bordered table-hover">
+	{% csrf_token %}
+
+
+	<thead>
+	<tr>
+		<th hidden scope="col">#</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">I/E</th>
+        <th scope="col">Veces</th>
+        <th scope="col">Valor</th>
+	</tr>
+	</thead>
+	<tbody>
+        {% if object_list %}
+        {% for cad_ing_ret in object_list %}
+		<tr class="clickable-row" data-href="#">
+			<td hidden>{{cad_ing_ret.id}}</td>
+            <td>{{cad_ing_ret.fecha_trabajo}}</td>
+            <td>{{cad_ing_ret.ind_ing_egr}}</td>
+            <td>{{cad_ing_ret.num_veces_i}}</td>
+            <td>{{cad_ing_ret.valor_ing_ret}}</td>
+
+
+
+		</tr>
+        {% endfor %}
+        {% else %}
+        <h2>No Hay Resultados...</h2>
+        {% endif %}
+	</tbody>
+
+</table>
+
+{% endblock %}
+{% block scripts%}
+    <script>
+    $( document ).ready(function() {
+     	$(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    	});
+     	console.log("OKOKOK");
+     	$.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "placeholder", "Seleccione" );
+        $.fn.select2.defaults.set( "selectOnClose", "true" );
+        $('.js-example-basic-single').select2();
+
+
+    });
+
+
+
+
+
+  </script>
+{% endblock %}

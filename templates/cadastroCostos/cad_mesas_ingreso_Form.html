@@ -148,19 +148,27 @@
 
 
     <script>
+    var select_data
     $(document).ready(function(){
         $.fn.select2.defaults.set( "theme", "bootstrap" );
         $.fn.select2.defaults.set( "width", "auto" );
         $.fn.select2.defaults.set( "placeholder", "Seleccione" );
         $.fn.select2.defaults.set( "selectOnClose", "true" );
         $('.js-example-basic-single').select2();
-        $.ajax({
-            url: 'ajax/retorna_insumos_venta/',
-            success: function (data) {
-                console.log(data)
-                $('.js-example-basic-single').html(data);
 
-           }
+        $.ajax({
+            url: 'ajax/retornaJson/',
+            dataType: 'json',
+            success: function (data) {
+                select_data = data
+                $('.js-example-basic-single').append('<option value=""></option>');
+                $.each(data, function(i, obj) {
+                    $('.js-example-basic-single').append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
+                });
+
+
+
+            }
         });
 
         $.ajax({
@@ -172,6 +180,11 @@
 
            }
         });
+
+
+
+
+
     });
     $('label[for=id_valor_vendido], input#id_valor_vendido').hide();
 
@@ -186,30 +199,13 @@
         var linea_actual = $('#addr'+i).find('.js-example-basic-single').select2({
             }).on("change", function (e) {
                 var actualIDlinea = $(this).attr("id").replace('prod','');
-                console.log(actualIDlinea);
                 var cod_insumo = ($(this).val());
-                $.ajax({
-                    url: 'ajax/retorna_precio_insumo/',
-                    data: {
-                    'cod_insumo': cod_insumo
-                },
-                    dataType: 'json',
-                    success: function (data) {
-                    console.log("funciono OMG989898")
-                    console.log(data.precio_venta)
-                    console.log($('#prec'+i).val())
-                    $('#prec'+ actualIDlinea).val(data.precio_venta);
-                }
-            });
+                $('#prec'+ actualIDlinea).val(select_data[cod_insumo].precio_venta);
         });
-        $.ajax({
-            url: 'ajax/retorna_insumos_venta/',
-            success: function (data) {
-                console.log("funciono OMG88888")
-                console.log(data)
-                 linea_actual.html(data);
-            }
-        });
+        linea_actual.append('<option value=""></option>');
+                $.each(select_data, function(i, obj) {
+                    linea_actual.append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
+                });
         $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
           i++;
     });
@@ -217,18 +213,7 @@
     $('.js-example-basic-single').on("change", function (e) {
         var actualIDlinea = $(this).attr("id").replace('prod','');
         var cod_insumo = ($(this).val());
-        $.ajax({
-                url: 'ajax/retorna_precio_insumo/',
-                data: {
-                'cod_insumo': cod_insumo
-                },
-                dataType: 'json',
-                success: function (data) {
-                console.log("funciono OMG888")
-                console.log(data.precio_venta)
-                $('#prec'+ actualIDlinea).val(data.precio_venta);
-                }
-        });
+        $('#prec'+ actualIDlinea).val(select_data[cod_insumo].precio_venta);
     });
 
 

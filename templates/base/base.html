@@ -23,6 +23,7 @@
         border: 1px solid #ccc;
         border-radius: 15px;
         padding: 12px;
+
     }
     .table-hover{
 		box-shadow: 10px 10px 5px grey;
@@ -43,6 +44,7 @@
     }
 
 
+
     </style>
 {% endblock %}
 
@@ -57,7 +59,7 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Insumos</a>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cadastros</a>
                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_un_med_listar' %}">Unidades de Medida</a>
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_insumos_listar' %}">Insumos de Consumo</a>
@@ -82,6 +84,13 @@
                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_mesa_crear_ingreso' %}">Ingreso de Mesas</a>
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_mesas_listar' %}">Listar Movimientos</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Caja</a>
+                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
+                    <a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_listar' %}">Listar Movimientos</a>
+                    <a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_crear' %}">Caja</a>
                 </div>
             </li>
         </ul>
@@ -140,7 +149,7 @@
               {% endif %}
             {% endfor %}
             {% if page_obj.has_next %}
-              <li class="page-item">templates/cadastroCostos/cad_mesas_ingreso_Form.html
+              <li class="page-item">
                  <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo;</a>
               </li>
             {% else %}

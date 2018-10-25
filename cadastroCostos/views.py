@@ -2,9 +2,9 @@ from django.core import serializers
 import json
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master
+from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
 from django.db.models import Sum, F, ExpressionWrapper, Max
-from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form
+from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form, Cad_ing_ret_Form
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView, FormView, View
 from django.urls import reverse_lazy
 from decimal import Decimal
@@ -459,14 +459,35 @@ def retorna_precio_insumo(request):
     data = {
         'precio_venta': precio_venta
     }
+
     print("DATA PRECIOS")
-    print (data)
+    print(data)
+
+
+
     return JsonResponse(data)
+
+
+def retornaJson(request):
+    data = list(Cad_insumos.objects.filter(~Q(ind_C_V_A='C')).values('cod_insumo', 'nombre_insumo', 'precio_venta'))
+    # queryset = Cad_insumos.objects.filter(~Q(ind_C_V_A='C'))
+    # data = serializers.serialize("json", queryset)
+    dictionary = {}
+
+    for key in data:
+        print (type(key))
+        index = key['cod_insumo']
+        del key['cod_insumo']
+        dictionary[index]= key
+
+    print ("DATA JSON")
+    print (dictionary)
+    return JsonResponse(dictionary, safe=False)
+
+
 
 def retorna_parametros_master(request):
     master = Cad_Master.objects.all().first()
-    print ("MASTER")
-    print (master)
     imp_venta = master.imp_venta
     imp_restaurante = master.imp_restaurante
     imp_renta = master.imp_renta
@@ -477,11 +498,7 @@ def retorna_parametros_master(request):
         'imp_renta' : imp_renta,
         'mesas' : mesas,
     }
-    print("DATA MASTER")
-    print (data)
     return JsonResponse(data)
-
-
 
 
 class Cad_master_List (ListView):
@@ -513,3 +530,75 @@ class Cad_master_Update(UpdateView):
 #     template_name = 'cadastroCostos/cad_master_Delete.html'
 #     success_url = reverse_lazy('betaNegocio:cad_master_listar')
 
+
+
+class Cad_ing_ret_List(ListView):
+    model = Cad_ing_ret
+    template_name = 'cadastroCostos/cad_ing_ret_List.html'
+    paginate_by = 10
+
+
+
+class Cad_ing_ret_Create(FormView):
+    model = Cad_ing_ret
+    form_class = Cad_ing_ret_Form
+    template_name = 'cadastroCostos/cad_ing_ret_Form.html'
+    success_url = reverse_lazy('betaNegocio:cad_ing_ret_listar')
+
+
+
+def valida_siguente_vez_fecha_ing_ret(request):
+    fecha_trabajo = request.GET.get('fecha_trabajo', None)
+
+    print(fecha_trabajo)
+    print(request.GET)
+    print(request.POST)
+    data = {
+        'num_veces_i': Cad_ing_ret.get_num_veces_i_Fecha(fecha_trabajo)
+    }
+    print("DEBUG AJAXDATA")
+    print (data)
+    return JsonResponse(data)
+
+def graba_ing_ret(request):
+    fecha_trabajo = request.POST.get('fecha_trabajo', None)
+    ind_ing_egr = request.POST.get('ind_ing_egr', None)
+    num_veces_i = Cad_ing_ret.get_num_veces_i_Fecha(fecha_trabajo)
+    valor_ing_ret = request.POST.get('entry', None)
+    notas = request.POST.get('notas', None)
+
+    caja = Cad_ing_ret(fecha_trabajo=fecha_trabajo, ind_ing_egr=ind_ing_egr,num_veces_i=num_veces_i,valor_ing_ret=valor_ing_ret, notas=notas)
+    caja.save()
+    print(fecha_trabajo)
+    print(request.GET)
+    print(request.POST)
+
+    caja = Cad_ing_ret.objects.all().filter(fecha_trabajo=fecha_trabajo,
+                                            num_veces_i=num_veces_i,
+                                            valor_ing_ret=valor_ing_ret).first()
+    data = {
+        'num_veces_i': Cad_ing_ret.get_num_veces_i_Fecha(fecha_trabajo)
+    }
+    print("DEBUG CAJAJA")
+    print (caja)
+    return JsonResponse(data)
+
+def retornaJsonCajaMov(request):
+    fecha_trabajo = request.GET.get('fecha_trabajo', None)
+    print ("CAJMOVEFECHA")
+    print (fecha_trabajo )
+    data = list(Cad_ing_ret.objects.filter(fecha_trabajo=fecha_trabajo).values('id','ind_ing_egr', 'num_veces_i', 'valor_ing_ret', 'notas'))
+    # queryset = Cad_insumos.objects.filter(~Q(ind_C_V_A='C'))
+    # data = serializers.serialize("json", queryset)
+    print (data)
+    dictionary = {}
+
+    for key in data:
+        print (type(key))
+        index = key['id']
+        del key['id']
+        dictionary[index]= key
+
+    print ("DATA JSON")
+    print (dictionary)
+    return JsonResponse(dictionary, safe=False)

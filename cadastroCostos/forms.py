@@ -1,7 +1,7 @@
 from django.db.models import Max
 from django import forms
 from datetime import datetime
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master
+from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
 from django.db.models import Q
 
 
@@ -329,5 +329,35 @@ class Cad_master_Form(forms.ModelForm):
             'imp_restaurante': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'imp_renta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'mesas': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+        }
+
+
+
+class Cad_ing_ret_Form(forms.ModelForm):
+
+    class Meta:
+        model = Cad_ing_ret
+
+        fields = [
+            'fecha_trabajo',
+            # 'ind_ing_egr',
+            # 'num_veces_i',
+            # 'valor_ing_ret',
+            # 'notas',
+
+        ]
+        labels = {
+            'fecha_trabajo': 'Fecha',
+            # 'ind_ing_egr': 'Ingreso/Egreso',
+            # 'num_veces_i': 'Veces',
+            # 'valor_ing_ret': 'Valor',
+            # 'notas': 'Notas',
+        }
+        widgets = {
+            'fecha_trabajo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'style': 'width:auto'}),
+            # 'ind_ing_egr': forms.Select(attrs={'class': 'form-control', 'style': 'width:auto'}),
+            # 'num_veces_i': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'readonly':'True'}),
+            # 'valor_ing_ret': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'pattern':"\d+((\.|,)\d+)?"}),
+            # 'notas': forms.TextInput(attrs={'class':'form-control', 'maxlength':'8', 'style': "width:auto"}),
         }
 

@@ -10,7 +10,7 @@
 {% block content %}
 
 
-<table class="table table-bordered table-hover">
+<table id="mastetable" class="table table-bordered table-hover">
 	{% csrf_token %}
 
 	<thead>
@@ -38,10 +38,18 @@
 
 </table>
 
+<a id="btnMaster" class="btn btn-primary" href="{% url 'betaNegocio:cad_master_crear' %}">Nueva</a>
+
 {% endblock %}
 {% block scripts%}
     <script>
     $( document ).ready(function() {
+     	var rowCount = $('#mastetable >tbody >tr').length;
+     	console.log("rowCount");
+     	console.log(rowCount);
+     	if (rowCount > 0){
+     		$('#btnMaster').hide()
+     	}
      	$(".clickable-row").click(function() {
         window.location = $(this).data("href");
     	});

@@ -37,6 +37,13 @@ urlpatterns = [
     url('nuevoMaster', Cad_master_Create.as_view(), name='cad_master_crear'),
     url('editarMaster/(?P<pk>\d+)/$', Cad_master_Update.as_view(), name='cad_master_editar'),
     url(r'^ajax/retorna_parametros_master/$', retorna_parametros_master, name='retorna_parametros_master'),
+    url(r'^ajax/retornaJson/$', retornaJson, name='retornaJson'),
+    url('listarCaja', Cad_ing_ret_List.as_view(), name='cad_ing_ret_listar'),
+    url('nuevoCaja', Cad_ing_ret_Create.as_view(), name='cad_ing_ret_crear'),
+    url(r'^ajax/valida_siguente_vez_fecha_ing_ret/$', valida_siguente_vez_fecha_ing_ret, name='valida_siguente_vez_fecha_ing_ret'),
+
+    url(r'^ajax/graba_ing_ret/$', graba_ing_ret, name='graba_ing_ret'),
+    url(r'^ajax/retornaJsonCajaMov/$', retornaJsonCajaMov, name='retornaJsonCajaMov'),
 
     # url(r'^unidad/nuevo$', UnidadCreate.as_view(), name='unidad_crear'),
     # url(r'^unidad/listar$', UnidadList.as_view(), name='unidad_listar'),

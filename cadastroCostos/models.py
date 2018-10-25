@@ -222,15 +222,30 @@ post_save.connect(slug_Save, sender=Cad_stock)
 
 class Cad_ing_ret(models.Model):
     slug = models.SlugField(unique=True)
-    fecha_trabajo = models.DateField()
+    fecha_trabajo = models.DateField(default=datetime.now)
     ind_ing_egr_CHOICES = (('I', 'Ingreso'), ('E', 'Egreso'))
-    ind_ing_egr = models.CharField(max_length=1, choices= ind_ing_egr_CHOICES)
+    ind_ing_egr = models.CharField(max_length=1, choices= ind_ing_egr_CHOICES, default='I')
     num_veces_i = models.SmallIntegerField()
     valor_ing_ret = models.DecimalField(max_digits=12, decimal_places=2)
     notas = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
-        unique_together = ["fecha_trabajo", "ind_ing_egr", "num_veces_i"]
+        # unique_together = ["fecha_trabajo", "ind_ing_egr", "num_veces_i"]
+        unique_together = ["fecha_trabajo", "num_veces_i"]
+
+    def get_num_veces_i_Fecha(fecha):
+        print(fecha)
+        print(type(fecha))
+        # data =  Cad_stock.objects.filter(fec_movimiento=fecha, cod_insumo=codigo).exists()
+        if str(fecha)=="" :
+            return 1
+
+        next_numveces = Cad_ing_ret.objects.filter(fecha_trabajo=fecha).aggregate(Max('num_veces_i'))
+
+        if next_numveces['num_veces_i__max'] == None:
+            return 1
+        else:
+            return next_numveces['num_veces_i__max'] + 1
 
 
 pre_save.connect(slug_Save, sender=Cad_ing_ret)
