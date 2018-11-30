@@ -42,7 +42,14 @@
      	$(".clickable-row").click(function() {
         window.location = $(this).data("href");
     	});
+    	{% for cad_un_med in object_list %}
+    		console.log("{{cad_un_med.descripcion}}")
+    	{% endfor %}
+     	console.log("{{object_list}}")
+     	console.log("{{context}}")
      	console.log("OKOKOK");
+
+
      });
   </script>
 {% endblock %}

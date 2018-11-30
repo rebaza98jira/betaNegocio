@@ -26,6 +26,10 @@ def slug_Save(sender, instance, *args, **kwargs):
         print("SON IGUALES CADMED")
         prefix = 'inventario'
         nombre_campo = 'id'
+    if sender == Cad_stock_pedido:
+        print("SON IGUALES CADMED")
+        prefix = 'inventario-pedido'
+        nombre_campo = 'id'
     if sender == Cad_ing_ret:
         print("SON IGUALES Insumos")
         prefix = 'caja'
@@ -216,6 +220,56 @@ pre_save.connect(slug_Save, sender=Cad_stock)
 post_save.connect(slug_Save, sender=Cad_stock)
 
 """FIN INVENTARIO"""
+"""INVENTARIO-PEDIDO"""
+
+class Cad_stock_pedido(models.Model):
+    slug = models.SlugField(unique=True)
+    cod_insumo = models.ForeignKey(Cad_insumos, null=False, blank=False, on_delete=models.PROTECT)
+    fec_movimiento = models.DateField(default=datetime.now)
+    num_veces = models.SmallIntegerField()
+    cantidad_mov = models.DecimalField(max_digits=8, decimal_places=2)
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
+    valor_insumo = models.DecimalField(max_digits=12, decimal_places=2)
+    ind_ing_sal_CHOICES = (('I', 'Ingreso'),('S', 'Salida'))
+    ind_ing_sal = models.CharField(max_length=1, choices= ind_ing_sal_CHOICES, default = 'I')
+    modo_pago_m_CHOICES = (('E', 'Efectivo'), ('T', 'Tarjeta'))
+    """CONFIRMAR SI DEFAULT DE MODO DE PAGO SERA EFECTIVO"""
+    modo_pago_m = models.CharField(max_length=1, choices= modo_pago_m_CHOICES, default= 'E')
+
+    def get_numveces_Fecha(fecha,codigo):
+        print(fecha)
+        print(type(fecha))
+        print(codigo)
+        print(type(codigo))
+        # data =  Cad_stock.objects.filter(fec_movimiento=fecha, cod_insumo=codigo).exists()
+        if str(fecha)=="" or str(codigo)=="":
+            return 1
+
+        next_numveces = Cad_stock.objects.filter(fec_movimiento=fecha, cod_insumo=codigo).aggregate(Max('num_veces'))
+
+        if next_numveces['num_veces__max'] == None:
+            return 1
+        else:
+            return next_numveces['num_veces__max'] + 1
+
+
+
+    class Meta:
+        unique_together = ["cod_insumo", "fec_movimiento", "num_veces"]
+
+    # def getnextNum_veces(*args):
+    #     print("Reached1")
+    #     print(args)
+    #     next_num_veces = Cad_stock.objects.filter(cod_insumo=1, fec_movimiento=args)
+    #     print(next_num_veces)
+    #     print("Reached2")
+    #     return "Works"
+    #         # next_num_veces['num_veces__max'] + 1
+
+pre_save.connect(slug_Save, sender=Cad_stock_pedido)
+post_save.connect(slug_Save, sender=Cad_stock_pedido)
+
+"""FIN INVENTARIO-PEDIDO"""
 
 
 """CAJA"""
@@ -283,6 +337,9 @@ class Cad_V_mesas(models.Model):
     num_mesa = models.SmallIntegerField()
     num_veces = models.SmallIntegerField()
     valor_vendido = models.DecimalField(max_digits=12, decimal_places=2)
+    estado_CHOICES = (('O', 'Orden'), ('P', 'Pagado'))
+    estado = models.CharField(max_length=1, choices=estado_CHOICES)
+
 
     class Meta:
         unique_together = ["fecha_trabajo", "num_mesa", "num_veces"]
@@ -315,8 +372,11 @@ class Cad_V_mesas_detalle(models.Model):
     cabecera = models.ForeignKey(Cad_V_mesas, to_field='slug', blank=False, null=False, on_delete=models.PROTECT)
     linea = models.SmallIntegerField()
     cod_insumo = models.ForeignKey(Cad_insumos, null=False, blank=False, on_delete=models.PROTECT)
-    cantidad_venta = models.SmallIntegerField()
+    cantidad_venta = models.DecimalField(max_digits=8, decimal_places=2)
     precio_venta = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        unique_together = ["cabecera", "linea"]
 
 pre_save.connect(slug_Save, sender=Cad_V_mesas_detalle)
 post_save.connect(slug_Save, sender=Cad_V_mesas_detalle)

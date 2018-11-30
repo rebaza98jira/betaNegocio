@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+<
+{% block SUBTITLE %}
+    Caja Ingreso
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block content %}
+    <form id="formPost" method="post">
+        {% csrf_token %}
+        <table>{{ form.as_table }}</table>
+
+        <br>
+        <button id="btnGuardar" type="submit" class="btn btn-primary">Guardar</button>
+        {% block cancelar %}
+            <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_ing_ret_listar_i' %}">Cancelar</a>
+        {% endblock %}
+
+    </form>
+
+{% endblock %}
+
+{% block scripts%}
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+    $( document ).ready(function() {
+     console.log( "ready!" );
+        var fecha_trabajo = $("#id_fecha_trabajo").val();
+        var loc = window.location.href
+        if (loc.toLowerCase().search('nuevocajaingreso') >=0 ){
+            console.log("Si Hay cadenas");
+            $("#id_ind_ing_egr").val("I")
+            $.ajax({
+                url: 'ajax/valida_siguente_vez_fecha_ing_ret/',
+                data: {
+                    'fecha_trabajo': fecha_trabajo,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("funciono OMG222")
+                    console.log(data.num_veces)
+                    $("#id_num_veces_i").val(data.num_veces);
+
+                }
+            });
+        }
+
+    });
+
+    $("#id_fecha_trabajo").change(function(){
+            console.log( $(this).val() );
+            var fecha_trabajo = $(this).val();
+            console.log("HERES")
+            $.ajax({
+                url: 'ajax/valida_siguente_vez_fecha_ing_ret/',
+                data: {
+                    'fecha_trabajo': fecha_trabajo,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("funciono OMG")
+                    console.log(data.num_veces)
+                    $("#id_num_veces_i").val(data.num_veces);
+
+                }
+            });
+
+        });
+
+    $('Form').submit(function() {
+        $('#id_ind_ing_egr').removeAttr('disabled');
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("floatingCirclesG").style.display = "block";
+    });
+
+    </script>
+
+
+{% endblock %}

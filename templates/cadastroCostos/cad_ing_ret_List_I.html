@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 
 {% block SUBTITLE %}
-    Caja
+    Caja Ingresos
 {%endblock%}
 {% block searchList %}
 
@@ -40,7 +40,7 @@
 	<tbody>
         {% if object_list %}
         {% for cad_ing_ret in object_list %}
-		<tr class="clickable-row" data-href="#">
+		<tr class="clickable-row" data-href="{% url 'betaNegocio:cad_ing_ret_editar_i' cad_ing_ret.id %}">
 			<td hidden>{{cad_ing_ret.id}}</td>
             <td>{{cad_ing_ret.fecha_trabajo}}</td>
             <td>{{cad_ing_ret.ind_ing_egr}}</td>
@@ -58,12 +58,7 @@
 
 
 </table>
-  <div class="row clearfix">
-        <div class="col-md-12">
-            <button type="button" id="add_row" class="btn btn-outline-info pull-left">+ Agregar</button>
-            <button type="button" id='delete_row' class="btn btn-outline-danger pull-right">- Quitar</button>
-        </div>
-    </div>
+<a class="btn btn-success" href="{% url 'betaNegocio:cad_ing_ret_crear_i' %}">Nuevo Ingreso</a>
 
 {% endblock %}
 {% block scripts%}

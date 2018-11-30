@@ -11,7 +11,7 @@
         <table>{{ form.as_table }}</table>
 
         <br>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button id="btnGuardar" type="submit" class="btn btn-primary">Guardar</button>
         {% block cancelar %}
             <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_insumos_listar' %}">Cancelar</a>
         {% endblock %}
@@ -49,7 +49,15 @@
         }
     });
 
-
+    $('#btnGuardar').on('click', function() {
+        if (($("#id_ind_C_V_A").val() == 'A') || ($("#id_ind_C_V_A").val() == 'V')){
+            if ($("#id_precio_venta").val() <= 0){
+                console.log($("#id_precio_venta").val())
+                alert('Precio de Venta no permitido');
+                event.preventDefault();
+            }
+        }
+    });
 
     $('#formPost').keydown(function (e) {
         if (e.keyCode == 13) {

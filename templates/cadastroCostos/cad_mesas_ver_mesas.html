@@ -21,6 +21,10 @@
 
     }
     </style>
+<table><tr><td><label for="id_fecha_trabajo">Fecha:</label></td><td><input type="date" name="fecha_trabajo" width="50px" class="form-control" readonly id="id_fecha_trabajo"></td></tr></table>
+
+
+
 
 <div id="divJumbo" class="jumbotron">
 
@@ -31,30 +35,70 @@
 
 {% endblock %}
 {% block scripts%}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
     <script>
 
-    totalMesas = 8
-    for (var i=1;i<=totalMesas;i++){
-
-        $("#divJumbo").append('<a id ="mesa' + i + '" class="btn btn-success btn-lg" href="/betaNegocio/nuevoMesaIngreso/'+i+'"  value='+i+' >Mesa: ' + i +'</a>');
-
-
-
-    }
+    var totalMesas=0;
 
       $("[id^=mesa]").on('click', function() {
         console.log($(this).attr('id'));
         console.log($(this).val());
+        <!--var params = { mesa:$(this).attr('id')};-->
+        <!--var str = jQuery.param( params );-->
+        <!--console.log(str)-->
+        <!--console.log($(this).attr('href'))-->
+        <!--$(this).attr("href", "/betaNegocio/nuevoMesaOrdenIngreso/" + str)-->
 
 
 
     });
 
     $( document ).ready(function() {
-     	$(".clickable-row").click(function() {
-        window.location = $(this).data("href");
-    	});
-     	console.log("OKOKOK");
+         $.ajax({
+            url: 'ajax/retorna_parametros_master/',
+            success: function (data) {
+                console.log("WORKS")
+                console.log(data.mesas)
+                totalMesas = data.mesas;
+                for (var i=1;i<=totalMesas;i++){
+                     $("#divJumbo").append('<a id ="mesa' + i + '" name="mesa' + i + '" class="btn btn-success btn-lg" href="/betaNegocio/nuevoMesaIngreso/'+i+'"  value='+i+' >Mesa: ' + i +'</a>');
+                }
+
+           }
+        });
+        console.log("TOTALMESAS")
+        console.log(totalMesas)
+
+
+
+         $.ajax({
+            url: 'ajax/retorna_fecha_servidor/',
+            dataType: 'json',
+            success: function (data) {
+                $('#id_fecha_trabajo').val(data.fecha_servidor)
+            }
+        });
+
+        $.ajax({
+            url: 'ajax/estado_mesas/',
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function(i, obj) {
+                    if (obj != 'Libre'){
+                        $('#mesa'+i).removeClass("btn btn-success btn-lg");
+                        $('#mesa'+i).addClass("btn btn-primary btn-lg");
+                        $('#mesa'+i).attr("href", "/betaNegocio/nuevoMesaOrdenIngreso/"+obj)
+                    }
+                });
+            }
+        });
+
+        console.log("OKOKOK");
+
      });
   </script>
 {% endblock %}

@@ -4,12 +4,13 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
 from django.db.models import Sum, F, ExpressionWrapper, Max
-from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form, Cad_ing_ret_Form
+from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form, Cad_ing_ret_Form, Cad_ing_ret_Form_I, Cad_ing_ret_Form_E
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView, FormView, View
 from django.urls import reverse_lazy
 from decimal import Decimal
+from datetime import datetime
 import pprint
-from django.db.models import Q
+from django.db.models import Q, Value, DecimalField
 # Create your views here.
 
 def index(request):
@@ -28,7 +29,8 @@ class Cad_un_med_List(ListView):
             context = Cad_un_med.objects.filter(descripcion__icontains=query)
             return context
         else:
-            return Cad_un_med.objects.all().order_by('un_med_insumo')
+            context = Cad_un_med.objects.all().order_by('un_med_insumo')
+            return context
 
 class Cad_un_med_Create(CreateView):
     model = Cad_un_med
@@ -333,6 +335,7 @@ def valida_siguente_vez_fecha(request):
 
 class Cad_mesas_Ver(TemplateView):
     # template_name = 'cadastroCostos/cad_mesas_ver_mesas.html'
+
     template_name = 'cadastroCostos/cad_mesas_ver_mesas.html'
 
 
@@ -353,9 +356,16 @@ class Cad_mesas_Create(CreateView):
     success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
 
     def get_context_data(self, **kwargs):
+        print("REQUEST DEBYG MESAS")
+        print(self.request.GET)
+        mesa = self.kwargs.get('mesa', 0)
+        print("Lo Llamo la mesa!!!")
+        print(mesa)
         context = super(Cad_mesas_Create, self).get_context_data(**kwargs)
         print("DEBUG CERATE MESAS CONTEXT")
         print(context)
+        context['mesa'] = mesa
+
 
         return context
 
@@ -366,23 +376,18 @@ class Cad_mesas_Create(CreateView):
         print ("FORM1")
         print(form)
 
-        print("SELF")
-        print(self)
-        print("REQUEST")
-        print(request.POST)
         dict_values_detalle = request.POST
-        print ("TYPO YOGA")
-        print (type(dict_values_detalle))
-        print(dict_values_detalle)
-        print ("largo")
         # dict_ = {k: yogafalme.getlist(k) if len(yogafalme.getlist(k)) > 1 else v for k, v in yogafalme.items()}
         dict_values_detalle=  dict(dict_values_detalle.lists())
+        print("OJO DE")
+        print(dict_values_detalle)
         print (dict_values_detalle['producto'])
         print(len(dict_values_detalle['producto']))
         print(dict_values_detalle['producto'][0])
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
+            print("OJO DE valid")
             if (len(dict_values_detalle['producto'])) == (len(dict_values_detalle['cantidad'])) and (len(dict_values_detalle['cantidad'])) == (len(dict_values_detalle['precio'])):
                 print ("SIN SON IUGALES 3")
                 # form = self.form_class(request.POST, instance=Cad_V_mesas)
@@ -393,10 +398,101 @@ class Cad_mesas_Create(CreateView):
                 print (cabecera.slug)
                 linea=1
                 while (linea <= len(dict_values_detalle['producto'])):
-                    detalle = Cad_V_mesas_detalle( cabecera_id=cabecera.slug, linea=linea, cod_insumo_id = dict_values_detalle['producto'][linea-1], cantidad_venta=dict_values_detalle['cantidad'][linea-1], precio_venta=dict_values_detalle['precio'][linea-1])
+                    detalle = Cad_V_mesas_detalle( cabecera_id=cabecera.slug, linea=linea, cod_insumo_id = dict_values_detalle['codigo'][linea-1], cantidad_venta=dict_values_detalle['cantidad'][linea-1], precio_venta=dict_values_detalle['precio'][linea-1])
                     detalle.save()
                     linea +=1
+                cabecera.estado='O'
+                cabecera.save()
+            return HttpResponseRedirect(self.get_success_url())
 
+
+class Cad_mesas_orden_Create(CreateView,UpdateView):
+    model = Cad_V_mesas
+    form_class = Cad_mesas_Form
+    template_name = 'cadastroCostos/cad_mesas_orden_Form.html'
+    success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
+
+    def get_context_data(self, **kwargs):
+
+        print("REQUEST DEBYG MESAS")
+        print(self.request.GET)
+        slug = self.kwargs.get('slug', 0)
+        context = super(Cad_mesas_orden_Create, self).get_context_data(**kwargs)
+        mesa_object = self.model.objects.get(slug=slug)
+        mesa = mesa_object.num_mesa
+        print("DEBUG CERATE MESAS CONTEXT")
+        print(context)
+        context['ordenes'] = Cad_V_mesas_detalle.objects.filter(cabecera_id=slug).order_by('linea')
+        # context['mesa'] = context['ordenes'][0].
+        print("ORDENES")
+        print(context['ordenes'])
+        context['mesa'] = mesa
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object
+        print("DEBUG POST CREATE MESAS")
+        form = self.form_class(request.POST)
+        print ("FORM1")
+        print(form)
+
+        dict_values_detalle = request.POST
+        # dict_ = {k: yogafalme.getlist(k) if len(yogafalme.getlist(k)) > 1 else v for k, v in yogafalme.items()}
+        dict_values_detalle=  dict(dict_values_detalle.lists())
+        print("OJO DE")
+        print(dict_values_detalle)
+        print (dict_values_detalle['producto'])
+        print(len(dict_values_detalle['producto']))
+        print(dict_values_detalle['producto'][0])
+        slug = self.kwargs.get('slug', 0)
+        mesa_object = self.model.objects.get(slug=slug)
+        form = self.form_class(request.POST, instance=mesa_object)
+        if form.is_valid():
+            form.save()
+            print("OJO DE valid")
+            if (len(dict_values_detalle['producto'])) == (len(dict_values_detalle['cantidad'])) and (len(dict_values_detalle['cantidad'])) == (len(dict_values_detalle['precio'])):
+                print ("SIN SON IUGALES 3")
+                # form = self.form_class(request.POST, instance=Cad_V_mesas)
+                cabecera = Cad_V_mesas.objects.all().filter(fecha_trabajo=form['fecha_trabajo'].value(),
+                                                            num_mesa=form['num_mesa'].value(),
+                                                            num_veces=form['num_veces'].value()).first()
+                print("llegacabecera")
+                print (cabecera.slug)
+                detalle_previo = Cad_V_mesas_detalle.objects.all().filter(cabecera_id=cabecera.slug).order_by('linea')
+                print("DetallePrevioLen")
+                print(len(detalle_previo))
+                print(detalle_previo[0].linea)
+                # detalle_previo[0].linea = 99
+                # detalle_previo[0].save()
+                linea=1
+                while (linea <= len(dict_values_detalle['producto'])):
+                    print("Linea ")
+                    print (linea)
+                    print("DETALLE PREIVO ")
+                    print(len(detalle_previo))
+                    if (linea<=(len(detalle_previo))):
+                        detalle_previo[linea - 1].cod_insumo_id = dict_values_detalle['codigo'][linea-1]
+                        detalle_previo[linea - 1].cantidad_venta = dict_values_detalle['cantidad'][linea-1]
+                        detalle_previo[linea - 1].precio_venta = dict_values_detalle['precio'][linea - 1]
+                        detalle_previo[linea - 1].save()
+                        print("PREVIOS")
+                    else:
+                        print("Nuevos")
+                        detalle = Cad_V_mesas_detalle( cabecera_id=cabecera.slug, linea=linea, cod_insumo_id = dict_values_detalle['codigo'][linea-1], cantidad_venta=dict_values_detalle['cantidad'][linea-1], precio_venta=dict_values_detalle['precio'][linea-1])
+                        detalle.save()
+                    linea +=1
+                while (linea <= len(detalle_previo)):
+                    print("Borra")
+                    detalle_previo[linea-1].delete()
+                    linea += 1
+
+                cabecera.estado='O'
+                if 'Pagar_Pedido' in request.POST:
+                    cabecera.estado = 'P'
+
+
+
+                cabecera.save()
             return HttpResponseRedirect(self.get_success_url())
 
 
@@ -426,8 +522,28 @@ class Cad_mesas_detalle_Create(CreateView):
     success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
 
 
+def estado_mesas(request):
+    master = Cad_Master.objects.all().first()
+    mesas = master.mesas
+    cont = 1
+    dictionary = {}
+    while cont<=mesas:
+        estadomesa=Cad_V_mesas.objects.all().filter(num_mesa=cont).order_by('fecha_trabajo').last()
+        print ("ESTADO MESA")
+        print(estadomesa)
+        if estadomesa == None:
+            dictionary[cont]='Libre'
+        elif estadomesa.estado == 'O':
+            dictionary[cont]=estadomesa.slug
+        elif estadomesa.estado == 'P':
+            dictionary[cont] = 'Libre'
+        cont=cont+1
 
-
+    # data = {
+    #     'mesas': mesas,
+    # }
+    return JsonResponse(dictionary, safe=False)
+    # return JsonResponse(data)
 
 def valida_siguente_vez_fecha_mesa(request):
     print ("AJAX FIRST LINE")
@@ -468,15 +584,39 @@ def retorna_precio_insumo(request):
     return JsonResponse(data)
 
 
-def retornaJson(request):
-    data = list(Cad_insumos.objects.filter(~Q(ind_C_V_A='C')).values('cod_insumo', 'nombre_insumo', 'precio_venta'))
-    # queryset = Cad_insumos.objects.filter(~Q(ind_C_V_A='C'))
-    # data = serializers.serialize("json", queryset)
+def retornaJsonInsumos(request):
+    data = list(Cad_insumos.objects.filter(~Q(ind_C_V_A='C')).values('cod_insumo', 'nombre_insumo', 'precio_venta', 'ind_C_V_A').annotate(stock = Value(999, output_field=DecimalField())))
+    stock_insumo = Cad_stock.objects.filter(cod_insumo__ind_C_V_A='A').values('cod_insumo', 'cantidad_mov')
+    stock_orden = Cad_V_mesas_detalle.objects.filter(cod_insumo__ind_C_V_A='A', cabecera_id__estado='O').values('cod_insumo', 'cantidad_venta')
+    print("STOCKORDEN")
+    print(stock_orden)
+    print("STOCKINSUMO")
+    print(stock_insumo)
+    dictInsumoStock = {}
+    for key in stock_insumo:
+        if key['cod_insumo'] in dictInsumoStock:
+            dictInsumoStock[key['cod_insumo']] += key['cantidad_mov']
+        else:
+            dictInsumoStock[key['cod_insumo']] = key['cantidad_mov']
+
+    dictOrdenStock = {}
+    for key in stock_orden:
+        if key['cod_insumo'] in dictOrdenStock:
+            dictOrdenStock[key['cod_insumo']] += key['cantidad_venta']
+        else:
+            dictOrdenStock[key['cod_insumo']] = key['cantidad_venta']
+
     dictionary = {}
 
     for key in data:
-        print (type(key))
         index = key['cod_insumo']
+        if (key['ind_C_V_A'] == 'A') and (key['cod_insumo'] in dictInsumoStock) :
+            if (key['cod_insumo'] in dictOrdenStock):
+                key['stock']= dictInsumoStock[key['cod_insumo']] - dictOrdenStock[key['cod_insumo']]
+            else:
+                key['stock'] = dictInsumoStock[key['cod_insumo']]
+        if (key['ind_C_V_A'] == 'A') and (key['cod_insumo'] not in dictInsumoStock) :
+            key['stock']= 0
         del key['cod_insumo']
         dictionary[index]= key
 
@@ -497,6 +637,13 @@ def retorna_parametros_master(request):
         'imp_restaurante' : imp_restaurante,
         'imp_renta' : imp_renta,
         'mesas' : mesas,
+    }
+    return JsonResponse(data)
+
+def retorna_fecha_servidor(request):
+    fecha_servidor = datetime.now().date()
+    data = {
+        'fecha_servidor' : fecha_servidor
     }
     return JsonResponse(data)
 
@@ -537,6 +684,53 @@ class Cad_ing_ret_List(ListView):
     template_name = 'cadastroCostos/cad_ing_ret_List.html'
     paginate_by = 10
 
+class Cad_ing_ret_List_I(ListView):
+    model = Cad_ing_ret
+    template_name = 'cadastroCostos/cad_ing_ret_List_I.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # query = self.request.GET.get("cod_insumo")
+        context = Cad_ing_ret.objects.filter(ind_ing_egr="I").order_by('fecha_trabajo')
+        return context
+
+
+class Cad_ing_ret_Create_I(CreateView):
+    model = Cad_ing_ret
+    form_class = Cad_ing_ret_Form_I
+    template_name = 'cadastroCostos/cad_ing_ret_Form_I.html'
+    success_url = reverse_lazy('betaNegocio:cad_ing_ret_listar_i')
+
+
+class Cad_ing_ret_Update_I(UpdateView):
+    model = Cad_ing_ret
+    form_class = Cad_ing_ret_Form_I
+    template_name = 'cadastroCostos/cad_ing_ret_Form_I.html'
+    success_url = reverse_lazy('betaNegocio:cad_ing_ret_listar_i')
+
+
+class Cad_ing_ret_List_E(ListView):
+    model = Cad_ing_ret
+    template_name = 'cadastroCostos/cad_ing_ret_List_E.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # query = self.request.GET.get("cod_insumo")
+        context = Cad_ing_ret.objects.filter(ind_ing_egr="E").order_by('fecha_trabajo')
+
+        return context
+
+class Cad_ing_ret_Create_E(FormView):
+    model = Cad_ing_ret
+    form_class = Cad_ing_ret_Form_E
+    template_name = 'cadastroCostos/cad_ing_ret_Form_E.html'
+    success_url = reverse_lazy('betaNegocio:cad_ing_ret_listar_e')
+
+class Cad_ing_ret_Update_E(UpdateView):
+    model = Cad_ing_ret
+    form_class = Cad_ing_ret_Form_I
+    template_name = 'cadastroCostos/cad_ing_ret_Form_E.html'
+    success_url = reverse_lazy('betaNegocio:cad_ing_ret_listar_e')
 
 
 class Cad_ing_ret_Create(FormView):
@@ -554,7 +748,7 @@ def valida_siguente_vez_fecha_ing_ret(request):
     print(request.GET)
     print(request.POST)
     data = {
-        'num_veces_i': Cad_ing_ret.get_num_veces_i_Fecha(fecha_trabajo)
+        'num_veces': Cad_ing_ret.get_num_veces_i_Fecha(fecha_trabajo)
     }
     print("DEBUG AJAXDATA")
     print (data)

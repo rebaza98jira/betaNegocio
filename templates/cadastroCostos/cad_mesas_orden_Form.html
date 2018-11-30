@@ -41,6 +41,7 @@
         cursor: pointer;
     }
 
+
 </style>
 
 {% endblock %}
@@ -115,15 +116,22 @@
           </tr>
         </thead>
         <tbody id="tbodyDetalle">
-          <tr id='addr0' >
-            <td>1</td>
-            <td><input id="prod0" name='producto' class="form-control" required readonly="true" /></td>
-            <td hidden width="120px" ><input id="cod0" type="number" name='codigo' class="form-control cod" /></td>
-            <td width="120px" ><input id="cant0" type="number" name='cantidad'  placeholder='Cant' required readonly class="form-control qty" step="0" min="0"/></td>
-            <td width="150px" ><input id="prec0" type="number" name='precio' placeholder='Precio Unitario' required readonly class="form-control price" step=".01" /></td>
-            <td><input id="total0" type="number" name='total' placeholder='0.00' class="form-control total" readonly step="0.01" /></td>
-            <td><button type='button' id='delete_Linea0' class='btn btn-outline-danger eliminar' >- Quitar</button></td>
+        {% for orden in ordenes %}
+
+
+
+          <tr id='addr{{orden.linea|add:"-1"}}' >
+            <td>{{orden.linea}}</td>
+            <td><input id='prod{{orden.linea|add:"-1"}}' name='producto' class="form-control" value="{{orden.cod_insumo}}" required readonly="true" /></td>
+            <td hidden width="120px" ><input id='cod{{orden.linea|add:"-1"}}' type="number" name='codigo' value="{{orden.cod_insumo.cod_insumo}}" class="form-control cod" /></td>
+            <td width="120px" ><input id='cant{{orden.linea|add:"-1"}}' type="number" name='cantidad'  placeholder='Cant' value="{{orden.cantidad_venta}}" required readonly class="form-control qty" step="0" min="0"/></td>
+            <td width="150px" ><input id='prec{{orden.linea|add:"-1"}}' type="number" name='precio' placeholder='Precio Unitario' value="{{orden.precio_venta}}" required readonly class="form-control price" step=".01" /></td>
+            <td><input id='total{{orden.linea|add:"-1"}}' type="number" name='total' placeholder='0.00' class="form-control total" readonly step="0.01" /></td>
+            <td><button type='button' id='delete_Linea{{orden.linea|add:"-1"}}' class='btn btn-outline-danger eliminar' >- Quitar</button></td>
+
+
           </tr>
+        {% endfor %}
         </tbody>
       </table>
     </div>
@@ -169,7 +177,7 @@
     <div class="col-md-12">
       <button id="btnGuardar" type="submit" class="btn btn-success">Guardar</button>
       <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_mesas_listar' %}">Cancelar</a>
-      <button id='btnDeshacer'type="reset" class="btn btn-warning">Deshacer</button>
+      <button id="Pagar"name="Pagar_Pedido" type="submit" class="btn btn-success btn-lg">PAGAR</button>
 
     </div>
   </div>
@@ -187,6 +195,8 @@
     <script>
     var select_data
     var list_lineas = []
+    var filas = 0
+    var i=1
     $(document).ready(function(){
         $.fn.select2.defaults.set( "theme", "bootstrap" );
         $.fn.select2.defaults.set( "width", "auto" );
@@ -196,22 +206,22 @@
         $('#id_num_mesa').val({{mesa}})
         var fecha_trabajo = $("#id_fecha_trabajo").val();
         var num_mesa = $("#id_num_mesa").val();
-        $('label[for=id_num_mesa], input#id_num_mesa').hide();
-        $('label[for=id_valor_vendido], input#id_valor_vendido').hide();
+        <!--$('label[for=id_num_mesa], input#id_num_mesa').hide();-->
+        <!--$('label[for=id_valor_vendido], input#id_valor_vendido').hide();-->
         console.log("VAVA")
-        $.ajax({
-            url: 'ajax/valida_siguente_vez_fecha_mesa/',
-            data: {
-                'fecha_trabajo': fecha_trabajo,
-                'num_mesa': num_mesa
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log("funciono OMG")
-                console.log(data.numveces)
-                $("#id_num_veces").val(data.numveces);
-            }
-        });
+        <!--$.ajax({-->
+            <!--url: 'ajax/valida_siguente_vez_fecha_mesa/',-->
+            <!--data: {-->
+                <!--'fecha_trabajo': fecha_trabajo,-->
+                <!--'num_mesa': num_mesa-->
+            <!--},-->
+            <!--dataType: 'json',-->
+            <!--success: function (data) {-->
+                <!--console.log("funciono OMG")-->
+                <!--console.log(data.numveces)-->
+                <!--$("#id_num_veces").val(data.numveces);-->
+            <!--}-->
+        <!--});-->
 
         $.ajax({
             url: 'ajax/retornaJsonInsumos/',
@@ -238,6 +248,13 @@
            }
         });
 
+        $('#tab_logic > tbody  > tr').each(function() {
+                console.log("cuenta filas")
+                filas++
+                i++
+            });
+        console.log("cuenta filas= " + filas)
+        calc()
 
     });
 
@@ -247,7 +264,7 @@
     var num_mesa = $("#id_num_mesa").val();
     $("#id_valor_vendido").val($("#total_amount").val());
 
-    var i=1;
+
 
     $('.js-example-basic-single').on("change", function (e) {
         var actualIDlinea = $(this).attr("id").replace('prod','');
@@ -257,7 +274,7 @@
         $('#cant'+ actualIDlinea).val(0);
     });
 
-    var filas = 0
+
     var actualIDlinea = 0
     $("#agregarProd").click(function(){
         console.log($("#selecProducto").val())
@@ -268,6 +285,7 @@
                 alert('Stock insuficiente');
             }else{
                 console.log("validado")
+                console.log(filas)
                 if (filas<1){
                     console.log("PriemraLinea")
                     $("#prod"+actualIDlinea).val($("#selecProducto option:selected" ).text())
@@ -326,23 +344,27 @@
 
     });
 
-    $("#delete_Linea0").click(function(){
-        select_data[$("#cod0").val()].stock = parseFloat(select_data[$("#cod0").val()].stock) + parseFloat($("#cant0").val())
+    $("[id^=delete_Linea]").click(function(){
+        console.log("CLICKLINEO START")
+        var actualIDlinea = $(this).attr("id").replace('delete_Linea','');
+        console.log(actualIDlinea )
+        console.log($("#cod"+actualIDlinea).val())
+        select_data[$("#cod"+actualIDlinea).val()].stock = parseFloat(select_data[$("#cod"+actualIDlinea).val()].stock) + parseFloat($("#cod"+actualIDlinea).val())
         if (filas > 1){
-            $('#addr0').remove();
+            $('#addr'+actualIDlinea).remove();
              var reorderna=1
             $('#tab_logic > tbody  > tr').each(function() {
-                console.log("Reordena")
+                console.log("SOMETHHINS")
                 $(this).find('td:first-child').html(reorderna++);
             });
             filas--;
             console.log("Filas D = " + filas)
 
         }else{
-            $("#prod0").val("")
-            $("#cod0").val(0)
-            $("#cant0").val(0)
-            $("#prec0").val(0.00)
+            $("#prod"+actualIDlinea).val("")
+            $("#cod"+actualIDlinea).val(0)
+            $("#cant"+actualIDlinea).val(0)
+            $("#prec"+actualIDlinea).val(0.00)
             filas--;
             console.log("Filas D = " + filas)
         }
