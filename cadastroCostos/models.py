@@ -337,8 +337,13 @@ class Cad_V_mesas(models.Model):
     num_mesa = models.SmallIntegerField()
     num_veces = models.SmallIntegerField()
     valor_vendido = models.DecimalField(max_digits=12, decimal_places=2)
-    estado_CHOICES = (('O', 'Orden'), ('P', 'Pagado'))
+    estado_CHOICES = (('O', 'Orden'), ('P', 'Pagado'), ('C', 'Comanda'))
     estado = models.CharField(max_length=1, choices=estado_CHOICES)
+    modo_pago_CHOICES = (('E', 'Efectivo'), ('T', 'Tarjeta'))
+    modo_pago = models.CharField(max_length=1, choices=modo_pago_CHOICES, default='E')
+    notas = models.CharField(max_length=50, null=True, blank=True)
+    creado = models.DateTimeField(default=datetime.now)
+    editado = models.DateTimeField(auto_now=True)
 
 
     class Meta:
@@ -421,6 +426,7 @@ class Cad_Master(models.Model):
     imp_restaurante = models.DecimalField(max_digits=5, decimal_places=2)
     imp_renta = models.DecimalField(max_digits=5, decimal_places=2)
     mesas = models.SmallIntegerField()
+    billetes = models.CharField(max_length=100, null=True, blank=True)
 
 
 pre_save.connect(slug_Save, sender=Cad_Master)

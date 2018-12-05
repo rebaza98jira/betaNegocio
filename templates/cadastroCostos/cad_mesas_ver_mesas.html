@@ -88,10 +88,20 @@
             dataType: 'json',
             success: function (data) {
                 $.each(data, function(i, obj) {
-                    if (obj != 'Libre'){
-                        $('#mesa'+i).removeClass("btn btn-success btn-lg");
-                        $('#mesa'+i).addClass("btn btn-primary btn-lg");
-                        $('#mesa'+i).attr("href", "/betaNegocio/nuevoMesaOrdenIngreso/"+obj)
+                    console.log("Estad")
+                    console.log(i)
+                    console.log(obj)
+                    if (obj !== null){
+                        if (obj.estado == 'O'){
+                            $('#mesa'+i).removeClass("btn btn-success btn-lg");
+                            $('#mesa'+i).addClass("btn btn-primary btn-lg");
+                            $('#mesa'+i).attr("href", "/betaNegocio/nuevoMesaOrdenIngreso/"+obj.slug)
+                        }
+                        if (obj.estado == 'C'){
+                            $('#mesa'+i).removeClass("btn btn-success btn-lg");
+                            $('#mesa'+i).addClass("btn btn-info btn-lg");
+                            $('#mesa'+i).attr("href", "/betaNegocio/mesaOrdenPagar/"+obj.slug)
+                        }
                     }
                 });
             }

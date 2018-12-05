@@ -4,13 +4,13 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
 from django.db.models import Sum, F, ExpressionWrapper, Max
-from .forms import Cad_un_med_Form, Cad_insumos_Form, Cad_stock_Form, Cad_stock_insumo_Form, Cad_costos_Form, Cad_mesas_Form, Cad_mesas_detalle_Form, Cad_V_mesas_Detalle_Form, Cad_master_Form, Cad_ing_ret_Form, Cad_ing_ret_Form_I, Cad_ing_ret_Form_E
+from .forms import *
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView, FormView, View
 from django.urls import reverse_lazy
 from decimal import Decimal
 from datetime import datetime
 import pprint
-from django.db.models import Q, Value, DecimalField
+from django.db.models import Q, Value, DecimalField, F
 # Create your views here.
 
 def index(request):
@@ -353,7 +353,7 @@ class Cad_mesas_Create(CreateView):
     model = Cad_V_mesas
     form_class = Cad_mesas_Form
     template_name = 'cadastroCostos/cad_mesas_ingreso_Form.html'
-    success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
+    success_url = reverse_lazy('betaNegocio:cad_costos_ver_mesas')
 
     def get_context_data(self, **kwargs):
         print("REQUEST DEBYG MESAS")
@@ -410,7 +410,7 @@ class Cad_mesas_orden_Create(CreateView,UpdateView):
     model = Cad_V_mesas
     form_class = Cad_mesas_Form
     template_name = 'cadastroCostos/cad_mesas_orden_Form.html'
-    success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
+    success_url = reverse_lazy('betaNegocio:cad_costos_ver_mesas')
 
     def get_context_data(self, **kwargs):
 
@@ -427,6 +427,7 @@ class Cad_mesas_orden_Create(CreateView,UpdateView):
         print("ORDENES")
         print(context['ordenes'])
         context['mesa'] = mesa
+        context['cabecera'] = slug
         return context
 
     def post(self, request, *args, **kwargs):
@@ -488,8 +489,10 @@ class Cad_mesas_orden_Create(CreateView,UpdateView):
 
                 cabecera.estado='O'
                 if 'Pagar_Pedido' in request.POST:
-                    cabecera.estado = 'P'
-
+                    cabecera.estado = 'C'
+                    cabecera.save()
+                    url = reverse_lazy('betaNegocio:cad_mesa_pagar_orden', kwargs={'slug': slug})
+                    return HttpResponseRedirect(url)
 
 
                 cabecera.save()
@@ -521,22 +524,160 @@ class Cad_mesas_detalle_Create(CreateView):
     template_name = 'cadastroCostos/cad_mesas_detalle_ingreso_Form.html'
     success_url = reverse_lazy('betaNegocio:cad_mesas_listar')
 
+class Cad_mesas_Pagar(UpdateView):
+    model = Cad_V_mesas
+    form_class = Cad_mesas_Pagar_Form
+    template_name = 'cadastroCostos/cad_mesas_Form_Pagar.html'
+    success_url = reverse_lazy('betaNegocio:cad_costos_ver_mesas')
 
+    def get_context_data(self, **kwargs):
+
+        slug = self.kwargs.get('slug', 0)
+        context = super(Cad_mesas_Pagar, self).get_context_data(**kwargs)
+        mesa_object = self.model.objects.get(slug=slug)
+        master_object = Cad_Master.objects.all().first()
+        context['ordenes'] = Cad_V_mesas_detalle.objects.filter(cabecera_id=slug).annotate(
+            importe=ExpressionWrapper(
+                F('cantidad_venta') * F('precio_venta'), output_field=DecimalField(max_digits=12, decimal_places=2)
+            )).order_by('linea')
+        subtotal = 0
+        for key in context['ordenes']:
+            subtotal+=key.importe
+
+        context['fecha'] = mesa_object.fecha_trabajo
+        context['hora'] = mesa_object.editado
+        context['mesa'] = mesa_object.num_mesa
+        context['vez'] = mesa_object.num_veces
+        context['cabecera'] = slug
+        context['subtotal'] = subtotal
+        context['impuesto1'] = subtotal * (master_object.imp_venta/100)
+        context['impuesto2'] = subtotal * (master_object.imp_restaurante/100)
+        context['total'] = subtotal + context['impuesto1'] + context['impuesto2']
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object
+        dict_values_detalle = request.POST
+        dict_values_detalle=  dict(dict_values_detalle.lists())
+        slug = self.kwargs.get('slug', 0)
+        mesa_object = self.model.objects.get(slug=slug)
+        cabecera = Cad_V_mesas.objects.all().filter(fecha_trabajo=mesa_object.fecha_trabajo,
+                                                    num_mesa=mesa_object.num_mesa,
+                                                    num_veces=mesa_object.num_veces).first()
+        detalle_previo = Cad_V_mesas_detalle.objects.all().filter(cod_insumo__ind_C_V_A='A',cabecera_id=cabecera.slug).order_by('cod_insumo')
+        # detalle_previo[0].linea = 99
+        # detalle_previo[0].save()
+
+        if 'volver_orden' in request.POST:
+            cabecera.estado = 'O'
+            cabecera.save()
+            url = reverse_lazy('betaNegocio:cad_mesa_crear_orden_ingreso', kwargs={'slug': slug})
+            return HttpResponseRedirect(url)
+
+        if 'btn_pagado' in request.POST:
+            print("PAADO")
+            linea=1
+            stock_insumo = Cad_stock.objects.filter(cod_insumo__ind_C_V_A='A').order_by('cod_insumo','fec_movimiento')
+            """CONSULTAS ANIDADAS SE PUEDE MEJORAR ALGORITMO"""
+            while (linea<=(len(detalle_previo))):
+                print("MATA")
+                stock_consumido = detalle_previo[linea - 1].cantidad_venta
+                for key in stock_insumo:
+                    print("MATA2")
+                    print("(detalle_previo[linea - 1].cod_insumo_id" )
+                    print(detalle_previo[linea - 1].cod_insumo_id)
+                    print("key.cod_insumo")
+                    print(key.cod_insumo.cod_insumo)
+                    print("StockCosnumod")
+                    print(stock_consumido)
+                    print("KEY")
+                    print(key)
+                    if (detalle_previo[linea - 1].cod_insumo_id == key.cod_insumo.cod_insumo):
+                        print("MATA3")
+                        if stock_consumido >= key.cantidad_mov:
+                            print("MATA4")
+                            stock_consumido = stock_consumido - key.cantidad_mov
+                            costo = Cad_costos.objects.all().filter(fecha_trabajo=key.fec_movimiento,
+                                                                           cod_insumo=key.cod_insumo.cod_insumo,
+                                                                           modo_pago_c=key.modo_pago_m).first()
+                            # costo = self.second_model.objects.all().filter(fecha_trabajo=form['fecha_trabajo'].value(), cod_insumo= form['cod_insumo'].value(),modo_pago_c='E')
+                            # file_s = Share.objects.filter(shared_user_id=log_id).values_list('files_id', flat=True).order_by('id')
+
+                            if (costo):
+                                print("MATA5")
+                                print("Actualiza")
+                                costo.cantidad_costo = Decimal(costo.cantidad_costo) + Decimal(
+                                    key.cantidad_mov)
+                                costo.valor_costo = Decimal(costo.valor_costo) + Decimal(key.valor_insumo)
+                                costo.save()
+                            else:
+                                print("MATA6")
+                                print("CREA")
+                                costo = Cad_costos(fecha_trabajo=key.fec_movimiento, cod_insumo_id=key.cod_insumo.cod_insumo,
+                                                   modo_pago_c=key.modo_pago_m,
+                                                   cantidad_costo=key.cantidad_mov,
+                                                   precio_costo=key.precio_unitario,
+                                                   valor_costo=(key.cantidad_mov *key.precio_unitario))
+                                costo.save()
+
+                            key.delete()
+                            if (stock_consumido == 0):
+                                print("MATA7")
+                                break
+
+                        else:
+                            print("MATA8")
+                            costo = Cad_costos.objects.all().filter(fecha_trabajo=key.fec_movimiento,
+                                                                    cod_insumo=key.cod_insumo,
+                                                                    modo_pago_c=key.modo_pago_m).first()
+                            """SE MATA CON EL PRECIO DE STOCK NO DE VENTA"""
+                            if (costo):
+                                print("MATA9")
+                                print("Actualiza")
+                                costo.cantidad_costo = Decimal(costo.cantidad_costo) + Decimal(
+                                    stock_consumido)
+                                costo.valor_costo = Decimal(costo.valor_costo) + (Decimal(key.precio_unitario)*Decimal(stock_consumido))
+                                costo.save()
+                            else:
+                                print("MATA10")
+                                print("CREA")
+                                print(stock_consumido)
+                                print(key.precio_unitario)
+                                costo = Cad_costos(fecha_trabajo=key.fec_movimiento, cod_insumo_id=key.cod_insumo.cod_insumo,
+                                                   modo_pago_c=key.modo_pago_m,
+                                                   cantidad_costo=stock_consumido,
+                                                   precio_costo=key.precio_unitario,
+                                                   valor_costo=(stock_consumido*key.precio_unitario))
+                                costo.save()
+                            key.cantidad_mov = key.cantidad_mov - stock_consumido
+                            key.valor_insumo = key.cantidad_mov * key.precio_unitario
+                            key.ind_ing_sal = 'S'
+                            key.save()
+                            print("MATA11")
+                            break
+                print("MATA12")
+                linea += 1
+
+
+
+
+        cabecera.estado = 'P'
+        cabecera.save()
+        print("MATA13")
+        return HttpResponseRedirect(self.get_success_url())
+
+    
 def estado_mesas(request):
     master = Cad_Master.objects.all().first()
     mesas = master.mesas
     cont = 1
     dictionary = {}
+
     while cont<=mesas:
-        estadomesa=Cad_V_mesas.objects.all().filter(num_mesa=cont).order_by('fecha_trabajo').last()
+        estadomesa=Cad_V_mesas.objects.all().filter(num_mesa=cont).values('slug','estado').order_by('creado').last()
         print ("ESTADO MESA")
         print(estadomesa)
-        if estadomesa == None:
-            dictionary[cont]='Libre'
-        elif estadomesa.estado == 'O':
-            dictionary[cont]=estadomesa.slug
-        elif estadomesa.estado == 'P':
-            dictionary[cont] = 'Libre'
+        dictionary[cont] = estadomesa
         cont=cont+1
 
     # data = {
@@ -587,7 +728,7 @@ def retorna_precio_insumo(request):
 def retornaJsonInsumos(request):
     data = list(Cad_insumos.objects.filter(~Q(ind_C_V_A='C')).values('cod_insumo', 'nombre_insumo', 'precio_venta', 'ind_C_V_A').annotate(stock = Value(999, output_field=DecimalField())))
     stock_insumo = Cad_stock.objects.filter(cod_insumo__ind_C_V_A='A').values('cod_insumo', 'cantidad_mov')
-    stock_orden = Cad_V_mesas_detalle.objects.filter(cod_insumo__ind_C_V_A='A', cabecera_id__estado='O').values('cod_insumo', 'cantidad_venta')
+    stock_orden = Cad_V_mesas_detalle.objects.filter(~Q(cabecera_id__estado='P'),cod_insumo__ind_C_V_A='A').values('cod_insumo', 'cantidad_venta')
     print("STOCKORDEN")
     print(stock_orden)
     print("STOCKINSUMO")
@@ -600,6 +741,8 @@ def retornaJsonInsumos(request):
             dictInsumoStock[key['cod_insumo']] = key['cantidad_mov']
 
     dictOrdenStock = {}
+    print("STOCKORDEN")
+    print(stock_orden)
     for key in stock_orden:
         if key['cod_insumo'] in dictOrdenStock:
             dictOrdenStock[key['cod_insumo']] += key['cantidad_venta']
@@ -632,11 +775,13 @@ def retorna_parametros_master(request):
     imp_restaurante = master.imp_restaurante
     imp_renta = master.imp_renta
     mesas = master.mesas
+    billetes=master.billetes
     data = {
         'imp_venta' : imp_venta,
         'imp_restaurante' : imp_restaurante,
         'imp_renta' : imp_renta,
         'mesas' : mesas,
+        "billetes" : billetes,
     }
     return JsonResponse(data)
 

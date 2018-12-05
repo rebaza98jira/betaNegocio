@@ -176,9 +176,8 @@
    <div class="row clearfix">
     <div class="col-md-12">
       <button id="btnGuardar" type="submit" class="btn btn-success">Guardar</button>
-      <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_mesas_listar' %}">Cancelar</a>
-      <button id="Pagar"name="Pagar_Pedido" type="submit" class="btn btn-success btn-lg">PAGAR</button>
-
+      <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_costos_ver_mesas' %}">Cancelar</a>
+      <button id="btnPagar"name="Pagar_Pedido" type="submit" href="{% url 'betaNegocio:cad_mesa_pagar_orden' slug=cabecera %}" class="btn btn-success btn-lg">PAGAR</button>
     </div>
   </div>
   </div>
@@ -206,8 +205,8 @@
         $('#id_num_mesa').val({{mesa}})
         var fecha_trabajo = $("#id_fecha_trabajo").val();
         var num_mesa = $("#id_num_mesa").val();
-        <!--$('label[for=id_num_mesa], input#id_num_mesa').hide();-->
-        <!--$('label[for=id_valor_vendido], input#id_valor_vendido').hide();-->
+        $('label[for=id_num_mesa], input#id_num_mesa').hide();
+        $('label[for=id_valor_vendido], input#id_valor_vendido').hide();
         console.log("VAVA")
         <!--$.ajax({-->
             <!--url: 'ajax/valida_siguente_vez_fecha_mesa/',-->
@@ -255,7 +254,7 @@
             });
         console.log("cuenta filas= " + filas)
         calc()
-
+        calc_total()
     });
 
 
@@ -369,7 +368,8 @@
             console.log("Filas D = " + filas)
         }
 
-        calc();
+        <!--calc();-->
+        <!--calc_total()-->
     });
 
 
@@ -396,9 +396,18 @@
 
     $('#btnGuardar').on('click', function() {
         $("#id_valor_vendido").val($("#total_amount").val());
-            if (($("#id_valor_vendido").val() <= 0) || ($("#total_amount").val() <= 0)){
-                alert('Valor Vendido no permitido');
-                event.preventDefault();
+        if (($("#id_valor_vendido").val() <= 0) || ($("#total_amount").val() <= 0)){
+            alert('Valor Vendido no permitido');
+            event.preventDefault();
+        };
+    });
+
+    $('#btnPagar').on('click', function() {
+        calc()
+        $("#id_valor_vendido").val($("#total_amount").val());
+        if (($("#id_valor_vendido").val() <= 0) || ($("#total_amount").val() <= 0)){
+            alert('Valor Vendido no permitido');
+            event.preventDefault();
         };
     });
 

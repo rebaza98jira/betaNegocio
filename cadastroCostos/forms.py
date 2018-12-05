@@ -297,6 +297,33 @@ class Cad_mesas_detalle_Form(forms.ModelForm):
         # self.fields['cod_insumo'].initial = Cad_insumos.objects.all().values('nombre_insumo')
 
 
+
+class Cad_mesas_Pagar_Form(forms.ModelForm):
+    class Meta:
+        model = Cad_V_mesas
+
+        fields = [
+            'fecha_trabajo',
+            # 'num_mesa',
+            'num_veces',
+            # 'valor_vendido',
+        ]
+        labels = {
+            'fecha_trabajo': 'Fecha',
+            # 'num_mesa': '   Mesa',
+            'num_veces': '   Veces',
+            # 'valor_vendido': 'Valor Vendido',
+        }
+        widgets = {
+            'fecha_trabajo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            # 'num_mesa': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'num_veces': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'readonly':'True'}),
+            # 'valor_vendido': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+
+        }
+
+
+
 class Cad_master_Form(forms.ModelForm):
 
     class Meta:
@@ -310,6 +337,7 @@ class Cad_master_Form(forms.ModelForm):
             'imp_restaurante',
             'imp_renta',
             'mesas',
+            'billetes',
 
         ]
         labels = {
@@ -320,6 +348,7 @@ class Cad_master_Form(forms.ModelForm):
             'imp_restaurante':'Impuesto de Restaurante',
             'imp_renta': 'Impuesto de Renta',
             'mesas': 'Numero de Mesas',
+            'billetes': 'Billetes en Uso',
         }
         widgets = {
             'cod_tributario': forms.TextInput(attrs={'class':'form-control', 'maxlength':'20', 'style': "width:auto"}),
@@ -329,6 +358,7 @@ class Cad_master_Form(forms.ModelForm):
             'imp_restaurante': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'imp_renta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'mesas': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'billetes': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '100', 'style': "width:auto"}),
         }
 
 
