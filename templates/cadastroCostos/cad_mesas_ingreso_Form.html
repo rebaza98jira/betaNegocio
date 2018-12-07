@@ -281,22 +281,39 @@
                         console.log("ID=")
                         console.log($(this).attr("id"))
                         actualIDlinea = $(this).attr("id").replace('delete_Linea','');
-                        if (filas > 1){
-                            $('#addr'+actualIDlinea).remove();
-                            filas--;
-                            var reorderna=1
-                            $('#tab_logic > tbody  > tr').each(function() {
-                                console.log("SOMETHHINS")
-                                $(this).find('td:first-child').html(reorderna++);
-                            });
+                        if ($("#cant"+actualIDlinea).val()==0){
+                            console.log("No Hay Valor")
                         }else{
-                            $("#prod"+actualIDlinea).val("")
-                            $("#cant"+actualIDlinea).val(0)
-                            $("#prec"+actualIDlinea).val(0.00)
-                            filas--;
+
+                            select_data[$("#cod"+actualIDlinea).val()].stock = parseFloat(select_data[$("#cod"+actualIDlinea).val()].stock) + parseFloat($("#cant"+actualIDlinea).val())
+                            if (filas > 1){
+                                $('#addr'+actualIDlinea).remove();
+                                filas--;
+                                var reorderna=1
+                                $('#tab_logic > tbody  > tr').each(function() {
+                                    console.log("SOMETHHINS")
+                                    $(this).find('td:first-child').html(reorderna++);
+                                });
+                            }else{
+                                $("#prod"+actualIDlinea).val("")
+                                $("#cant"+actualIDlinea).val(0)
+                                $("#prec"+actualIDlinea).val(0.00)
+                                filas--;
+                            }
+                            $('#selectStock').val(0);
+                            $("#selecCant").val(0)
+                            console.log("REACG")
+                            $('#selecProducto').empty();
+                            var data =  select_data
+                            var data =  select_data
+                            $('.js-example-basic-single').append('<option value=""></option>');
+                            $.each(data, function(i, obj) {
+                                $('.js-example-basic-single').append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
+                            });
+
+                            calc();
+                            console.log("Filas D = " + filas)
                         }
-                        calc();
-                        console.log("Filas D = " + filas)
                     });
                 }
                 filas++;
@@ -326,27 +343,40 @@
     });
 
     $("#delete_Linea0").click(function(){
-        select_data[$("#cod0").val()].stock = parseFloat(select_data[$("#cod0").val()].stock) + parseFloat($("#cant0").val())
-        if (filas > 1){
-            $('#addr0').remove();
-             var reorderna=1
-            $('#tab_logic > tbody  > tr').each(function() {
-                console.log("Reordena")
-                $(this).find('td:first-child').html(reorderna++);
-            });
-            filas--;
-            console.log("Filas D = " + filas)
-
+        if ($("#cant0").val()==0){
+            console.log("No Hay Valor")
         }else{
-            $("#prod0").val("")
-            $("#cod0").val(0)
-            $("#cant0").val(0)
-            $("#prec0").val(0.00)
-            filas--;
-            console.log("Filas D = " + filas)
-        }
+            select_data[$("#cod0").val()].stock = parseFloat(select_data[$("#cod0").val()].stock) + parseFloat($("#cant0").val())
+            if (filas > 1){
+                $('#addr0').remove();
+                 var reorderna=1
+                $('#tab_logic > tbody  > tr').each(function() {
+                    console.log("Reordena")
+                    $(this).find('td:first-child').html(reorderna++);
+                });
+                filas--;
+                console.log("Filas D = " + filas)
 
-        calc();
+            }else{
+                $("#prod0").val("")
+                $("#cod0").val(0)
+                $("#cant0").val(0)
+                $("#prec0").val(0.00)
+                filas--;
+                console.log("Filas D = " + filas)
+            }
+            $('#selectStock').val(0);
+            $("#selecCant").val(0)
+            console.log("REACG")
+            $('#selecProducto').empty();
+            var data =  select_data
+            var data =  select_data
+            $('.js-example-basic-single').append('<option value=""></option>');
+            $.each(data, function(i, obj) {
+                $('.js-example-basic-single').append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
+            });
+            calc();
+        }
     });
 
 

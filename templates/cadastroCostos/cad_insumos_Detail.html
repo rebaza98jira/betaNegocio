@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 
 {% block SUBTITLE %}
-    Ingreso de Inventario
+    Insumos de Consumo
 {%endblock%}
 {% block searchList %}
 {% endblock %}
@@ -25,16 +25,16 @@
 
     <script>
     $( document ).ready(function() {
-         var loc = window.location.href;
+        var loc = window.location.href;
         $('label[for=id_precio_venta], input#id_precio_venta').hide();
-         if (($("#id_ind_C_V_A").val() == 'A') || ($("#id_ind_C_V_A").val() == 'V')){
+            if (($("#id_ind_C_V_A").val() == 'A') || ($("#id_ind_C_V_A").val() == 'V')){
             console.log("OVERYEAH")
-             $('label[for=id_precio_venta], input#id_precio_venta').show();
+            $('label[for=id_precio_venta], input#id_precio_venta').show();
         }
          $("#formdiv").find("*").prop("disabled", true);
 
 
-         $.fn.select2.defaults.set( "theme", "bootstrap" );
+        $.fn.select2.defaults.set( "theme", "bootstrap" );
         $.fn.select2.defaults.set( "width", "auto" );
         $.fn.select2.defaults.set( "placeholder", "Seleccione" );
         $.fn.select2.defaults.set( "selectOnClose", "true" );

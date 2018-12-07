@@ -284,7 +284,10 @@
                 alert('Stock insuficiente');
             }else{
                 console.log("validado")
+
                 console.log(filas)
+                console.log("LineaActual")
+                console.log(actualIDlinea)
                 if (filas<1){
                     console.log("PriemraLinea")
                     $("#prod"+actualIDlinea).val($("#selecProducto option:selected" ).text())
@@ -296,27 +299,34 @@
                     $('#tab_logic').append('<tr id="addr'+(i)+'"></tr>');
                     $('#addr'+i).append("<td>"+(filas+1)+"</td><td><input id='prod"+i+"' name='producto' value='" +$("#selecProducto option:selected" ).text()+ "' class='form-control' readonly /></td><td hidden width='120px' ><input id='cod"+i+"' type='number' name='codigo' class='form-control cod' value='"+$('#selecProducto').val()+"' /></td><td width='120px'><input type='number' id='cant"+i+"' name='cantidad' value='"+ $('#selecCant').val() +"' placeholder='Cantidad' readonly class='form-control qty' step='0' min='0'/></td><td width='150px'><input type='number' id='prec"+i+"' name='precio' value='"+select_data[$('#selecProducto').val()].precio_venta+"' placeholder='Precio Unitario' readonly class='form-control price' step='0.00' min='0'/></td><td><input type='number'id='total"+i+"' name='total' placeholder='0.00' class='form-control total' step='.01' readonly/></td><td><button type='button' id='delete_Linea"+i+"' class='btn btn-outline-danger eliminar'>- Quitar</button></td>")
                     $('#addr'+i).find('.eliminar').click(function() {
+                        console.log("ID=VALORES NUEVOS")
                         console.log("ID=")
                         console.log($(this).attr("id"))
                         actualIDlinea = $(this).attr("id").replace('delete_Linea','');
-                        if (filas > 1){
-                            $('#addr'+actualIDlinea).remove();
-                            filas--;
-                            var reorderna=1
-                            $('#tab_logic > tbody  > tr').each(function() {
-                                console.log("SOMETHHINS")
-                                $(this).find('td:first-child').html(reorderna++);
-                            });
+                        if ($("#cant"+actualIDlinea).val()==0){
+                            console.log("No Hay Valor")
                         }else{
-                            $("#prod"+actualIDlinea).val("")
-                            $("#cant"+actualIDlinea).val(0)
-                            $("#prec"+actualIDlinea).val(0.00)
-                            filas--;
+                            select_data[$("#cod"+actualIDlinea).val()].stock = parseFloat(select_data[$("#cod"+actualIDlinea).val()].stock) + parseFloat($("#cant"+actualIDlinea).val())
+                            if (filas > 1){
+                                $('#addr'+actualIDlinea).remove();
+                                filas--;
+                                var reorderna=1
+                                $('#tab_logic > tbody  > tr').each(function() {
+                                    console.log("SOMETHHINS")
+                                    $(this).find('td:first-child').html(reorderna++);
+                                });
+                            }else{
+                                $("#prod"+actualIDlinea).val("")
+                                $("#cant"+actualIDlinea).val(0)
+                                $("#prec"+actualIDlinea).val(0.00)
+                                filas--;
+                            }
+                            calc();
+                            console.log("Filas D = " + filas)
                         }
-                        calc();
-                        console.log("Filas D = " + filas)
                     });
                 }
+
                 filas++;
                 console.log("Filas = " + filas)
                 calc();
@@ -344,32 +354,51 @@
     });
 
     $("[id^=delete_Linea]").click(function(){
+
         console.log("CLICKLINEO START")
-        var actualIDlinea = $(this).attr("id").replace('delete_Linea','');
+        actualIDlinea = $(this).attr("id").replace('delete_Linea','');
         console.log(actualIDlinea )
         console.log($("#cod"+actualIDlinea).val())
-        select_data[$("#cod"+actualIDlinea).val()].stock = parseFloat(select_data[$("#cod"+actualIDlinea).val()].stock) + parseFloat($("#cod"+actualIDlinea).val())
-        if (filas > 1){
-            $('#addr'+actualIDlinea).remove();
-             var reorderna=1
-            $('#tab_logic > tbody  > tr').each(function() {
-                console.log("SOMETHHINS")
-                $(this).find('td:first-child').html(reorderna++);
-            });
-            filas--;
-            console.log("Filas D = " + filas)
-
+        console.log($("#cant"+actualIDlinea).val())
+        if ($("#cant"+actualIDlinea).val()==0){
+            console.log("No Hay Valor")
         }else{
-            $("#prod"+actualIDlinea).val("")
-            $("#cod"+actualIDlinea).val(0)
-            $("#cant"+actualIDlinea).val(0)
-            $("#prec"+actualIDlinea).val(0.00)
-            filas--;
-            console.log("Filas D = " + filas)
-        }
+        console.log("VALORES!22")
+        console.log(select_data[$("#cod"+actualIDlinea).val()].stock)
+        console.log($("#cant"+actualIDlinea).val())
+        console.log($("#cod"+actualIDlinea).val())
+            select_data[$("#cod"+actualIDlinea).val()].stock = parseFloat(select_data[$("#cod"+actualIDlinea).val()].stock) + parseFloat($("#cant"+actualIDlinea).val())
+            if (filas > 1){
+                $('#addr'+actualIDlinea).remove();
+                 var reorderna=1
+                $('#tab_logic > tbody  > tr').each(function() {
+                    console.log("SOMETHHINS")
+                    $(this).find('td:first-child').html(reorderna++);
+                });
+                filas--;
+                console.log("Filas D = " + filas)
 
-        <!--calc();-->
-        <!--calc_total()-->
+            }else{
+                $("#prod"+actualIDlinea).val("")
+                $("#cod"+actualIDlinea).val(0)
+                $("#cant"+actualIDlinea).val(0)
+                $("#prec"+actualIDlinea).val(0.00)
+                filas--;
+                console.log("Filas D = " + filas)
+            }
+            $('#selectStock').val(0);
+            $("#selecCant").val(0)
+            console.log("REACG")
+            $('#selecProducto').empty();
+            var data =  select_data
+            var data =  select_data
+            $('.js-example-basic-single').append('<option value=""></option>');
+            $.each(data, function(i, obj) {
+                $('.js-example-basic-single').append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
+            });
+            calc();
+            <!--calc_total()-->
+        }
     });
 
 

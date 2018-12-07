@@ -38,6 +38,7 @@
             <th scope="col">Insumo</th>
             <th scope="col">Cantidad</th>
             <th scope="col">Precio</th>
+            <th scope="col">Importe</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +49,7 @@
             <td>{{cad_mesas_detalle.cod_insumo}}</td>
             <td>{{cad_mesas_detalle.cantidad_venta}}</td>
             <td>{{cad_mesas_detalle.precio_venta}}</td>
+            <td>{{cad_mesas_detalle.importe|floatformat:2}}</td>
         </tr>
     {% endfor %}
     {% else %}

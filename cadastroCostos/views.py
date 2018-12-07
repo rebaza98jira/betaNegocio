@@ -509,7 +509,10 @@ class Cad_mesas_Detalle(DetailView, UpdateView):
         print(self.kwargs['slug'])
 
         # cadmesasdetalle = Cad_mesas_Detalle.objects.only('slug').get(slug=self.kwargs['slug']).slug
-        context['mov_mesas'] = Cad_V_mesas_detalle.objects.all().filter(cabecera=self.kwargs['slug']).order_by('linea')
+        context['mov_mesas'] = Cad_V_mesas_detalle.objects.all().filter(cabecera=self.kwargs['slug']).annotate(
+            importe=ExpressionWrapper(
+                F('cantidad_venta') * F('precio_venta'), output_field=DecimalField(max_digits=12, decimal_places=2)
+            )).order_by('linea')
         # context['saldo'] = cantidad_mov_ingresos_suma['cantidad_mov__sum'] - cantidad_mov_salida_suma['cantidad_mov__sum']
         print (context)
         return context
@@ -658,12 +661,21 @@ class Cad_mesas_Pagar(UpdateView):
                 print("MATA12")
                 linea += 1
 
-
-
-
+        cabecera.valor_vendido = request.POST.get('monto')
         cabecera.estado = 'P'
-        cabecera.save()
+
+        num_veces_i = Cad_ing_ret.get_num_veces_i_Fecha(cabecera.fecha_trabajo)
+        nota = "Mesa: " + str(cabecera.num_mesa) + "-" + "Op:" + str(cabecera.num_veces)
+        ingreso = Cad_ing_ret(fecha_trabajo=cabecera.fecha_trabajo, ind_ing_egr="I",
+                              num_veces_i=num_veces_i,
+                              valor_ing_ret=cabecera.valor_vendido,
+                              notas=nota)
         print("MATA13")
+        print(request.POST.get('monto'))
+        cabecera.save()
+        ingreso.save()
+
+
         return HttpResponseRedirect(self.get_success_url())
 
     

@@ -83,7 +83,6 @@
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Mesas</a>
                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_costos_ver_mesas' %}">Ver Mesas</a>
-                    <a class="dropdown-item" href="{% url 'betaNegocio:cad_mesa_crear_ingreso' 5 %}">Ingreso de Mesas</a>
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_mesas_listar' %}">Listar Movimientos</a>
                 </div>
             </li>
@@ -92,8 +91,8 @@
                 <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px);">
                     <!--<a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_listar' %}">Listar Movimientos</a>-->
                     <!--<a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_crear' %}">Caja</a>-->
-                    <a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_listar_i' %}">Ingreso Caja</a>
                     <a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_listar_e' %}">Egreso Caja</a>
+                    <a class="dropdown-item" href="{% url 'betaNegocio:cad_ing_ret_listar_i' %}">Ingreso Caja</a>
                 </div>
             </li>
         </ul>
