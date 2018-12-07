@@ -686,7 +686,7 @@ def estado_mesas(request):
     dictionary = {}
 
     while cont<=mesas:
-        estadomesa=Cad_V_mesas.objects.all().filter(num_mesa=cont).values('slug','estado').order_by('creado').last()
+        estadomesa=Cad_V_mesas.objects.all().filter(num_mesa=cont).values('slug','estado', 'creado', 'valor_vendido').order_by('creado').last()
         print ("ESTADO MESA")
         print(estadomesa)
         dictionary[cont] = estadomesa
@@ -877,7 +877,7 @@ class Cad_ing_ret_List_E(ListView):
 
         return context
 
-class Cad_ing_ret_Create_E(FormView):
+class Cad_ing_ret_Create_E(CreateView):
     model = Cad_ing_ret
     form_class = Cad_ing_ret_Form_E
     template_name = 'cadastroCostos/cad_ing_ret_Form_E.html'

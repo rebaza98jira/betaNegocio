@@ -342,7 +342,7 @@ class Cad_V_mesas(models.Model):
     modo_pago_CHOICES = (('E', 'Efectivo'), ('T', 'Tarjeta'))
     modo_pago = models.CharField(max_length=1, choices=modo_pago_CHOICES, default='E')
     notas = models.CharField(max_length=50, null=True, blank=True)
-    creado = models.DateTimeField(default=datetime.now)
+    creado = models.DateTimeField(default=datetime.now, editable=False)
     editado = models.DateTimeField(auto_now=True)
 
 
