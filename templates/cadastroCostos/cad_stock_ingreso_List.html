@@ -3,6 +3,8 @@
 {% block SUBTITLE %}
     Ingreso de Inventario
 {%endblock%}
+
+
 {% block searchList %}
     <br>
     <form method="GET" action="" class="form-inline mt-2 mt-md-0">
@@ -14,13 +16,14 @@
 
 
 {% block content %}
-
+<div class="row">
+<div class="col-lg-12 col-xs-4">
 
 
 
 <br>
 <br>
-<table class="table table-bordered table-hover">
+<table class="table table-responsive table-bordered table-hover">
 	{% csrf_token %}
 
 
@@ -64,6 +67,7 @@
 
 </table>
 <a class="btn btn-success" href="{% url 'betaNegocio:cad_stock_crear_ingreso' %}">Ingresar</a>
+</div></div>
 {% endblock %}
 {% block scripts%}
     <script>

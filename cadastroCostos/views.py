@@ -406,7 +406,7 @@ class Cad_mesas_Create(CreateView):
             return HttpResponseRedirect(self.get_success_url())
 
 
-class Cad_mesas_orden_Create(CreateView,UpdateView):
+class Cad_mesas_orden_Create(UpdateView):
     model = Cad_V_mesas
     form_class = Cad_mesas_Form
     template_name = 'cadastroCostos/cad_mesas_orden_Form.html'
@@ -787,13 +787,15 @@ def retorna_parametros_master(request):
     imp_restaurante = master.imp_restaurante
     imp_renta = master.imp_renta
     mesas = master.mesas
-    billetes=master.billetes
+    billetes= master.billetes
+    accesorapido= master.accesorapido
     data = {
         'imp_venta' : imp_venta,
         'imp_restaurante' : imp_restaurante,
         'imp_renta' : imp_renta,
         'mesas' : mesas,
         "billetes" : billetes,
+        "accesorapido": accesorapido,
     }
     return JsonResponse(data)
 

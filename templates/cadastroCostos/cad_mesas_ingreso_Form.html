@@ -6,6 +6,17 @@
         border: 1px solid #ccc;
         border-radius: 15px;
         padding: 12px;
+        box-shadow: 10px 10px 5px grey;
+
+    }
+
+    #divright{
+        box-shadow: 10px 10px 5px grey;
+        border: 1px solid #ccc;
+        border-radius: 15px;
+        background: #EEE;
+        margin: 0 auto;
+        display:table-cell
 
     }
 
@@ -20,11 +31,9 @@
     }
 
     #tab_logic_total{
-        box-shadow: 10px 10px 5px grey;
     }
 
     #tab_logic{
-        box-shadow: 10px 10px 5px grey;
     }
 
      #overlay {
@@ -40,6 +49,21 @@
         z-index: 2;
         cursor: pointer;
     }
+
+
+    .classbillete{
+
+    box-shadow: 10px 10px 5px grey;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    margin: 5px;
+    font-size:10pt;
+
+    }
+    #pagarData{
+        text-align: center;
+    }
+
 
 </style>
 
@@ -66,113 +90,80 @@
     <table><tbody>{% for field in form  %}
     {{ field.errors }}
     <td><strong>{{ field.label_tag }}</strong></td><td>{{ field }}</td>
-  {% endfor %}</tbody></table>
+    {% endfor %}</tbody></table>
 
     <br>
 
 
-  <div class="row clearfix">
+    <div id="parentdiv" class="row">
+        <div id="formdiv" class="col-sm-9 form-group">
+            <table>
+                <tr>
+                    <th>
+                        <label for="selecProducto">Producto:</label>
+                    </th>
+                    <td>
+                        <select name="descripcion" class="js-example-basic-single" style="width:auto" id="selecProducto">
+                    </td>
+                    <th>
+                        <label for="selectStock">Stock:</label>
+                    </th>
+                    <td>
+                        <input type="text" name="stock" class="form-control" style="width:100px" readonly id="selectStock">
+                    </td>
+                    <th>
+                        <label for="selecCant">Cantidad:</label>
+                    </th>
+                    <td>
+                        <input type="number" name="selecCant"  class="form-control" style="width:100px" id="selecCant">
+                    </td>
+                    <td id="tdAgregarbutton">
+                        <button type="button" id="agregarProd" class="btn btn-outline-info ">+ Agregar</button>
+                    </td>
+                </tr>
+            </table>
+            <br>
 
-      <div id="formdiv" class="form-group">
-          <table>
-              <tr>
-                  <th>
-                      <label for="selecProducto">Producto:</label>
-                  </th>
-                  <td>
-                      <select name="descripcion" class="js-example-basic-single" style="width:auto" id="selecProducto">
-                  </td>
-                  <th>
-                      <label for="selectStock">Stock:</label>
-                  </th>
-                  <td>
-                      <input type="text" name="stock" class="form-control" style="width:100px" readonly id="selectStock">
-                  </td>
-                  <th>
-                      <label for="selecCant">Cantidad:</label>
-                  </th>
-                  <td>
-                      <input type="number" name="selecCant"  class="form-control" style="width:100px" id="selecCant">
-                  </td>
-                  <td id="tdAgregarbutton">
-                      <button type="button" id="agregarProd" class="btn btn-outline-info ">+ Agregar</button>
-                  </td>
-              </tr>
-          </table>
-      </div>
+            <table class="table table-bordered table-hover" id="tab_logic">
+                <thead>
+                <tr>
+                    <th class="text-center"> # </th>
+                    <th class="text-center"> Producto </th>
+                    <th hidden class="text-center"> codigo</th>
+                    <th class="text-center"> Cant </th>
+                    <th class="text-center"> Precio </th>
+                    <th class="text-center"> Importe </th>
+                </tr>
+                </thead>
+                <tbody id="tbodyDetalle">
+                <tr id='addr0' >
+                    <td>1</td>
+                    <td><input id="prod0" name='producto' class="form-control" required readonly="true" /></td>
+                    <td hidden width="120px" ><input id="cod0" type="number" name='codigo' class="form-control cod" /></td>
+                    <td width="120px" ><input id="cant0" type="number" name='cantidad'  placeholder='Cant' required readonly class="form-control qty" step="0" min="0"/></td>
+                    <td width="150px" ><input id="prec0" type="number" name='precio' placeholder='Precio Unitario' required readonly class="form-control price" step=".01" /></td>
+                    <td><input id="total0" type="number" name='total' placeholder='0.00' class="form-control total" readonly step="0.01" /></td>
+                    <td><button type='button' id='delete_Linea0' class='btn btn-outline-danger eliminar' >- Quitar</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="divright" class="col-sm-3">
+            <div id="pagarData">
+                <label id="labelTotalPagar">Accesos Rapidos</label>
+                <div id="billetes" class="col-sm-12"></div>
+            </div>
+        </div>
 
 
-    <div class="v l-md-12">
-      <table class="table table-bordered table-hover" id="tab_logic">
-        <thead>
-          <tr>
-            <th class="text-center"> # </th>
-            <th class="text-center"> Producto </th>
-            <th hidden class="text-center"> codigo</th>
-            <th class="text-center"> Cant </th>
-            <th class="text-center"> Precio </th>
-            <th class="text-center"> Importe </th>
-          </tr>
-        </thead>
-        <tbody id="tbodyDetalle">
-          <tr id='addr0' >
-            <td>1</td>
-            <td><input id="prod0" name='producto' class="form-control" required readonly="true" /></td>
-            <td hidden width="120px" ><input id="cod0" type="number" name='codigo' class="form-control cod" /></td>
-            <td width="120px" ><input id="cant0" type="number" name='cantidad'  placeholder='Cant' required readonly class="form-control qty" step="0" min="0"/></td>
-            <td width="150px" ><input id="prec0" type="number" name='precio' placeholder='Precio Unitario' required readonly class="form-control price" step=".01" /></td>
-            <td><input id="total0" type="number" name='total' placeholder='0.00' class="form-control total" readonly step="0.01" /></td>
-            <td><button type='button' id='delete_Linea0' class='btn btn-outline-danger eliminar' >- Quitar</button></td>
-          </tr>
-        </tbody>
-      </table>
+
+
+        <div class="col-md-12">
+
+            <button id="btnGuardar" type="submit" class="btn btn-success">Guardar</button>
+            <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_costos_ver_mesas' %}">Cancelar</a>
+        </div>
     </div>
-  </div>
-
-
-<div id="divLogical" class="pull-right">
-
-    <div class="row clearfix" style="margin-top:20px">
-
-      <table class="table table-bordered table-hover" id="tab_logic_total">
-        <tbody>
-          <tr>
-            <th class="text-center">Sub Total</th>
-            <td class="text-center"><input type="number" name='sub_total' placeholder='0.00' class="form-control" id="sub_total" readonly/></td>
-          </tr>
-          <tr>
-            <th class="text-center">Impuesto 1</th>
-            <td class="text-center"><div class="input-group mb-2 mb-sm-0">
-                <input type="number" class="form-control" id="tax" placeholder="0">
-                <div class="input-group-addon">%</div>
-              </div></td>
-          </tr>
-          <tr>
-            <th class="text-center">Impuesto 2</th>
-            <td class="text-center"><div class="input-group mb-2 mb-sm-0">
-                <input type="number" class="form-control" id="tax2" placeholder="0">
-                <div class="input-group-addon">%</div>
-              </div></td>
-          </tr>
-          <tr>
-            <th class="text-center">Monto de Impuesto</th>
-            <td class="text-center"><input type="number" name='tax_amount' id="tax_amount" placeholder='0.00' class="form-control" readonly/></td>
-          </tr>
-          <tr>
-            <th class="text-center">Total</th>
-            <td class="text-center"><input type="number" name='total_amount' id="total_amount" placeholder='0.00' class="form-control" readonly/></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-   <div class="row clearfix">
-    <div class="col-md-12">
-      <button id="btnGuardar" type="submit" class="btn btn-success">Guardar</button>
-      <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_costos_ver_mesas' %}">Cancelar</a>
-
-    </div>
-  </div>
-  </div>
 </form>
 
 
@@ -186,18 +177,22 @@
     <script>
     var select_data
     var list_lineas = []
+    document.getElementById("floatingCirclesG").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
     $(document).ready(function(){
+
         $.fn.select2.defaults.set( "theme", "bootstrap" );
-        $.fn.select2.defaults.set( "width", "auto" );
+        $.fn.select2.defaults.set( "width", "250px" );
         $.fn.select2.defaults.set( "placeholder", "Seleccione" );
         $.fn.select2.defaults.set( "selectOnClose", "true" );
         $('.js-example-basic-single').select2();
-        $('#id_num_mesa').val({{mesa}})
         var fecha_trabajo = $("#id_fecha_trabajo").val();
-        var num_mesa = $("#id_num_mesa").val();
+        var num_mesa = {{mesa}}
+         $("#id_num_mesa").val({{mesa}});
         $('label[for=id_num_mesa], input#id_num_mesa').hide();
-        $('label[for=id_valor_vendido], input#id_valor_vendido').hide();
+        <!--$('label[for=id_valor_vendido], input#id_valor_vendido').hide();-->
         console.log("VAVA")
+
         $.ajax({
             url: 'ajax/valida_siguente_vez_fecha_mesa/',
             data: {
@@ -209,10 +204,12 @@
                 console.log("funciono OMG")
                 console.log(data.numveces)
                 $("#id_num_veces").val(data.numveces);
-            }
+            },
+            async: false
         });
 
         $.ajax({
+            async:'false',
             url: 'ajax/retornaJsonInsumos/',
             dataType: 'json',
             success: function (data) {
@@ -221,22 +218,48 @@
                 $.each(data, function(i, obj) {
                     $('.js-example-basic-single').append('<option value="'+i+'">'+obj.nombre_insumo+'</option>');
                 });
-
-
-
-            }
+            },
+            async: false
         });
 
-        $.ajax({
+       $.ajax({
             url: 'ajax/retorna_parametros_master/',
             success: function (data) {
-                console.log(data)
-                $('#tax').val(data.imp_venta);
-                $('#tax2').val(data.imp_restaurante);
+                console.log("WORKS")
+                result = data.accesorapido.split(';')
+                for (var a in result){
+                    var variable = result[a]
+                    result2 = variable.split(':')
+                    var clase_bebida_comida;
+                    if (result2[1]=='B'){
+                        clase_bebida_comida = '"btn btn-info classbillete"'
+                    }
+                    if (result2[1]=='C'){
+                        clase_bebida_comida = '"btn btn-warning classbillete"'
+                    }
+                    $("#billetes").append('<a id ="billete' + result2[0] + '" name="billetes' + result2[0] + '" class='+clase_bebida_comida+' href="#"  value='+result2[0]+' >' + select_data[result2[0]].nombre_insumo +'</a>');
+                }
+                $('.classbillete').click(function () {
+                    if (parseFloat($('#selecProducto').val()) == parseFloat($(this).attr("value"))){
+                        acumula = parseFloat($('#selecCant').val()) + 1
+                        $('#selecCant').val(acumula)
+                    }else{
 
-           }
+                        console.log("PRESIONA BILLETE")
+                        console.log($(this).attr("value"))
+                        var billete = parseFloat($(this).attr("value"))
+                        console.log(billete)
+                        $('#selecProducto').val(billete).trigger('change');
+                        }
+                    calc();
+                });
+
+
+            },
+            async: false
         });
-
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("floatingCirclesG").style.display = "none";
 
     });
 
@@ -254,11 +277,13 @@
         $('#selectStock').val(select_data[cod_insumo].stock);
         $('#prec'+ actualIDlinea).val(select_data[cod_insumo].precio_venta);
         $('#cant'+ actualIDlinea).val(0);
+        $('#selecCant').val(1);
     });
 
     var filas = 0
     var actualIDlinea = 0
     $("#agregarProd").click(function(){
+
         console.log($("#selecProducto").val())
         if (($("#selecProducto").val() != 0) && ($("#selecCant").val()>0)){
             if (parseFloat($('#selectStock').val())<parseFloat($('#selecCant').val())){
@@ -384,14 +409,6 @@
         calc();
     });
 
-    $('#tax').on('keyup change',function(){
-        calc_total();
-    });
-
-    $('#tax2').on('keyup change',function(){
-        calc_total();
-    });
-
 
     $('#formPost').keydown(function (e) {
         if (e.keyCode == 13) {
@@ -402,10 +419,9 @@
     });
 
     $('#btnGuardar').on('click', function() {
-        $("#id_valor_vendido").val($("#total_amount").val());
-            if (($("#id_valor_vendido").val() <= 0) || ($("#total_amount").val() <= 0)){
-                alert('Valor Vendido no permitido');
-                event.preventDefault();
+        if ($("#id_valor_vendido").val() <= 0){
+            alert('Valor Vendido no permitido');
+            event.preventDefault();
         };
     });
 
@@ -419,6 +435,7 @@
                 calc_total();
             }
         });
+
     }
 
     function calc_total(){
@@ -426,10 +443,7 @@
         $('.total').each(function() {
             total += parseInt($(this).val());
         });
-        $('#sub_total').val(total.toFixed(2));
-            tax_sum=total/100*$('#tax').val() + total/100*$('#tax2').val();
-        $('#tax_amount').val(tax_sum.toFixed(2));
-        $('#total_amount').val((tax_sum+total).toFixed(2));
+        $('#id_valor_vendido').val(total.toFixed(2));
     }
 
     $('form').submit(function() {

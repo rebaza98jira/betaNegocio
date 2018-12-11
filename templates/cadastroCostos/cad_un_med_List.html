@@ -3,15 +3,14 @@
 {% block SUBTITLE %}
     Unidades de Medida
 {%endblock%}
-
-
-
 {% block content %}
+<div class="row">
+<div class="col-lg-12 col-xs-4">
+
 
 
 <table class="table table-bordered table-hover">
 	{% csrf_token %}
-
 	<thead>
 	<tr>
 		<th scope="col">Codigo</th>
@@ -33,6 +32,8 @@
 	</tbody>
 
 </table>
+	</div>
+	</div>
 <a class="btn btn-primary" href="{% url 'betaNegocio:cad_un_med_crear' %}">Nueva</a>
 
 {% endblock %}

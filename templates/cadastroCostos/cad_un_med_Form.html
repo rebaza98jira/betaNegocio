@@ -6,12 +6,18 @@
 {% block searchList %}
 {% endblock %}
 {% block content %}
+<div class="row">
+<div class="col-lg-12 col-xs-4">
 
 
 <form id="formPost" method="post">
     {% csrf_token %}
-    <table>{{ form.as_table }}</table>
+    <div class="form-group">
+    <div class="input-group">
 
+    <table>{{ form.as_table }}</table>
+    </div>
+</div>
     <br>
     <button type="submit" class="btn btn-primary">Guardar</button>
     {% block cancelar %}
@@ -45,4 +51,5 @@
         document.getElementById("floatingCirclesG").style.display = "block";
     });
   </script>
+</div></div>
 {% endblock %}

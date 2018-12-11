@@ -427,6 +427,7 @@ class Cad_Master(models.Model):
     imp_renta = models.DecimalField(max_digits=5, decimal_places=2)
     mesas = models.SmallIntegerField()
     billetes = models.CharField(max_length=100, null=True, blank=True)
+    accesorapido = models.CharField(max_length=200, null=True, blank=True)
 
 
 pre_save.connect(slug_Save, sender=Cad_Master)

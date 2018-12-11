@@ -338,6 +338,8 @@ class Cad_master_Form(forms.ModelForm):
             'imp_renta',
             'mesas',
             'billetes',
+            'accesorapido',
+
 
         ]
         labels = {
@@ -349,6 +351,7 @@ class Cad_master_Form(forms.ModelForm):
             'imp_renta': 'Impuesto de Renta',
             'mesas': 'Numero de Mesas',
             'billetes': 'Billetes en Uso',
+            'accesorapido': 'Acceso Rapido',
         }
         widgets = {
             'cod_tributario': forms.TextInput(attrs={'class':'form-control', 'maxlength':'20', 'style': "width:auto"}),
@@ -359,6 +362,7 @@ class Cad_master_Form(forms.ModelForm):
             'imp_renta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'mesas': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
             'billetes': forms.TextInput(attrs={'class': 'form-control', 'maxlength': '100', 'style': "width:auto"}),
+            'accesorapido': forms.Textarea(attrs={'class': 'form-control', 'maxlength': '200', 'style': "width:auto"}),
         }
 
 

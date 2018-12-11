@@ -11,21 +11,36 @@
         padding: 30px;
     }
 
+    #GuardarSalida{
+    margin:5px;
+    }
+    #someIDA{
+    margin:5px;
+    }
+
+    #BajaTotal{
+    margin-left:20px;
+
+    }
+
 
 </style>
 <form id="formPost" method="post">
-
-
-
-        <table id="tableForms" >
-            <tr>
-                <td><h2>Salida de Stock</h2><table>{{ form.as_table }}</table></td>
-                <td><h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         </h2></td>
-                <td><h2><br>Estado de Stock<br></h2><table>{{ form2.as_table }}</table></td>
-            </tr>
+{% csrf_token %}
+    <div class="row">
+        <div class="col-lg-6 col-xs-4">
+        <h2>Salida de Stock</h2>
+        <table>
+            {{ form.as_table }}
         </table>
-    {% csrf_token %}
+    </div>
+    <div class="col-lg-6 col-xs-4">
+        <h2>Estado de Stock</h2>
+        <table>
+            {{ form2.as_table }}
+        </table>
 
+    </div>
     <br>
     <br>
 
@@ -33,8 +48,9 @@
     {% block cancelar %}
         <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_stock_salida_listar' %}">Cancelar</a>
     {% endblock %}
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <button id="BajaTotal"name="Baja_Total" type="submit" class="btn btn-primary btn-lg">Baja Total</button>
+</div>
+
 
 
 </form>
