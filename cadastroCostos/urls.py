@@ -59,6 +59,12 @@ urlpatterns = [
     url(r'^ajax/retornaJsonCajaMov/$', retornaJsonCajaMov, name='retornaJsonCajaMov'),
     url(r'ajax/retorna_fecha_servidor/$', retorna_fecha_servidor, name='retorna_fecha_servidor'),
     url('nuevoCaja', Cad_ing_ret_Create.as_view(), name='cad_ing_ret_crear'),
+    url('verEstadoEcoFin', Cad_Estado_Eco_Fin.as_view(), name='cad_estado_eco_fin'),
+    url('cierreEstadoEcoFinActual', Cad_Cierre_Eco_Fin_Actual.as_view(), name='cad_cierre_eco_fin_actual'),
+    url('nuevoEstadoEcoFin', Cad_Cierre_Create.as_view(), name='cad_cierre_eco_fin_crear'),
+
+
+
     # url(r'^unidad/nuevo$', UnidadCreate.as_view(), name='unidad_crear'),
     # url(r'^unidad/listar$', UnidadList.as_view(), name='unidad_listar'),
     # url(r'^unidad/editar/(?P<pk>\d+)/$', UnidadUpdate.as_view(), name='unidad_editar'),

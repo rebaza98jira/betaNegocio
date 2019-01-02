@@ -1,7 +1,7 @@
 from django.db.models import Max
 from django import forms
 from datetime import datetime
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
+from .models import *
 from django.db.models import Q
 
 
@@ -452,5 +452,78 @@ class Cad_ing_ret_Form_E(forms.ModelForm):
             'num_veces_i': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'readonly':'True'}),
             'valor_ing_ret': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px', 'pattern':"\d+((\.|,)\d+)?"}),
             'notas': forms.TextInput(attrs={'class':'form-control', 'maxlength':'8', 'style': "width:auto"}),
+        }
+
+
+class Cad_est_finan_Form(forms.ModelForm):
+
+    class Meta:
+        model = Cad_est_finan
+
+        fields = [
+            'año',
+            'mes',
+            'fec_inicio',
+            'fec_final',
+            'ingreso_mes',
+            'ingreso_acum',
+            'costo_tarjeta_mes',
+            'costo_efectivo_mes',
+            'costo_acum',
+            'res_econom_mes',
+            'res_econom_acum',
+            'stock_tarjeta',
+            'stock_efectivo',
+            'saldo_caja_mes',
+            'saldo_caja_acum',
+            'saldo_caja_neto',
+            'res_finan_mes',
+            'res_finan_acum',
+            # 'estado_mes',
+
+
+        ]
+        labels = {
+            'año':'Año',
+            'mes':'Mes',
+            'fec_inicio':'Fecha Inicio',
+            'fec_final':'Fecha Fin',
+            'ingreso_mes':'Ingreso Mensual',
+            'ingreso_acum':'Ingreso Acumulado',
+            'costo_tarjeta_mes':'Costo Tarjeta Mensual',
+            'costo_efectivo_mes':'Costo Efectivo Mensual',
+            'costo_acum':'Costo Acumulado',
+            'res_econom_mes':'Resultado Economico Mensual',
+            'res_econom_acum':'Resultado Economuco Acumulado',
+            'stock_tarjeta':'Stock Tarjeta',
+            'stock_efectivo':'Stock Efectivo',
+            'saldo_caja_mes':'Saldo Caja Mensual',
+            'saldo_caja_acum':'Saldo Caja Acumulado',
+            'saldo_caja_neto':'Saldo Neto',
+            'res_finan_mes':'Resultado Financiero Mensual',
+            'res_finan_acum':'Resultado Financiero Acumulado',
+            # 'estado_mes':'Estado Mensual',
+        }
+        widgets = {
+            'año': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'fec_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'style': 'width:auto'}),
+            'fec_final': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'style': 'width:auto'}),
+            'ingreso_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'ingreso_acum': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            'costo_tarjeta_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'costo_efectivo_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'costo_acum': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'res_econom_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'res_econom_acum': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'stock_tarjeta': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'stock_efectivo': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'saldo_caja_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'saldo_caja_acum': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'saldo_caja_neto': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'res_finan_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px' }),
+            'res_finan_acum': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+            # 'estado_mes': forms.NumberInput(attrs={'class': 'form-control', 'style': 'width:100px'}),
+
         }
 

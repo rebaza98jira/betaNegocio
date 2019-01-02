@@ -2,13 +2,15 @@ from django.core import serializers
 import json
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
-from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret
+from .models import Cad_un_med, Cad_insumos, Cad_stock, Cad_costos, Cad_V_mesas, Cad_V_mesas_detalle, Cad_Master, Cad_ing_ret, Cad_est_finan
 from django.db.models import Sum, F, ExpressionWrapper, Max
 from .forms import *
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView, FormView, View
 from django.urls import reverse_lazy
 from decimal import Decimal
 from datetime import datetime
+from datetime import timedelta
+
 import pprint
 from django.db.models import Q, Value, DecimalField, F
 # Create your views here.
@@ -533,6 +535,7 @@ class Cad_mesas_Pagar(UpdateView):
     template_name = 'cadastroCostos/cad_mesas_Form_Pagar.html'
     success_url = reverse_lazy('betaNegocio:cad_costos_ver_mesas')
 
+
     def get_context_data(self, **kwargs):
 
         slug = self.kwargs.get('slug', 0)
@@ -678,7 +681,194 @@ class Cad_mesas_Pagar(UpdateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    
+class Cad_Estado_Eco_Fin(ListView):
+    # template_name = 'cadastroCostos/cad_mesas_ver_mesas.html'
+    model = Cad_est_finan
+    template_name = 'cadastroCostos/cad_estado_eco_fin.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        print("QERYDATE")
+        query = self.request.GET.get("q")
+        fecha_inicio = self.request.GET.get("inicio_date")
+        fecha_fin = self.request.GET.get("fin_date")
+        context = query
+        print(query)
+        print(fecha_inicio)
+        print(fecha_fin)
+
+        if (query) :
+            print(query)
+            print("QERYDATE2")
+            context = self.model.objects.filter(fec_inicio__range=[fecha_inicio, fecha_fin], fec_final__range=[fecha_inicio, fecha_fin])
+            return context
+        else:
+            print("QERYDATE3")
+            context = self.model.objects.all()
+            return context
+
+    def get_context_data(self, **kwargs):
+        print("CONTEXT1111111")
+        slug = self.kwargs.get('slug', 0)
+        context = super(Cad_Estado_Eco_Fin, self).get_context_data(**kwargs)
+        master_object = Cad_Master.objects.all().first()
+        ingreso_mes = Cad_ing_ret.objects.filter(ind_ing_egr='I').aggregate(Sum('valor_ing_ret'))
+        costo_tarjeta = Cad_costos.objects.filter(modo_pago_c = 'T').aggregate(Sum('valor_costo'))
+        costo_efectivo = Cad_costos.objects.filter(modo_pago_c='E').aggregate(Sum('valor_costo'))
+        stock_tarjeta = Cad_stock.objects.filter(modo_pago_m='T').aggregate(Sum('valor_insumo'))
+        stock_efectivo = Cad_stock.objects.filter(modo_pago_m='E').aggregate(Sum('valor_insumo'))
+        egresos_caja = Cad_ing_ret.objects.filter(ind_ing_egr='E').aggregate(Sum('valor_ing_ret'))
+        # context['ordenes'] = Cad_V_mesas_detalle.objects.filter(cabecera_id=slug).annotate(
+        #     importe=ExpressionWrapper(
+        #         F('cantidad_venta') * F('precio_venta'), output_field=DecimalField(max_digits=12, decimal_places=2)
+        #     )).order_by('linea')
+        # subtotal = 0
+        # for key in context['ordenes']:
+        #     subtotal+=key.importe
+
+        acumulado = 0
+        context['ingreso_mes'] = ingreso_mes['valor_ing_ret__sum']
+        context['ingreso_mes_acum'] = acumulado + ingreso_mes['valor_ing_ret__sum']
+        context['costo_tarjeta'] = costo_tarjeta['valor_costo__sum']
+        context['costo_efectivo'] = costo_efectivo['valor_costo__sum']
+        context['costo_acum'] = acumulado + costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum']
+        context['res_econom_mes'] = ingreso_mes['valor_ing_ret__sum'] - (costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum'])
+        context['res_econom_acum'] = acumulado + (ingreso_mes['valor_ing_ret__sum'] - (costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum']))
+        context['stock_tarjeta'] = stock_tarjeta['valor_insumo__sum']
+        context['stock_efectivo'] = stock_efectivo['valor_insumo__sum']
+        context['saldo_caja_mes'] = ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum'])
+        context['saldo_caja_acum'] = acumulado + (ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum']))
+        context['res_finan_mes'] = (ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum'])) + (stock_efectivo['valor_insumo__sum']) + (stock_tarjeta['valor_insumo__sum'])
+        context['res_finan_mes_acum'] = acumulado + context['saldo_caja_acum'] + stock_tarjeta['valor_insumo__sum'] + stock_efectivo['valor_insumo__sum']
+
+
+
+        return context
+
+
+class Cad_Cierre_Eco_Fin_Actual(TemplateView):
+    template_name = 'cadastroCostos/cad_cierre_eco_fin_actual.html'
+    def get_context_data(self, **kwargs):
+        print("CONTEXT1111111")
+        fechaSimula = self.request.GET.get("q")
+        fecha_inicio = self.request.GET.get("inicio_date")
+        fecha_fin = self.request.GET.get("fin_date")
+        if fecha_inicio == None or fecha_fin == None:
+            fecha_inicio = datetime.now().date()
+            fecha_fin = datetime.now().date()
+
+        print (fechaSimula)
+        print(fecha_inicio)
+        print(fecha_fin)
+        slug = self.kwargs.get('slug', 0)
+        context = super(Cad_Cierre_Eco_Fin_Actual, self).get_context_data(**kwargs)
+        master_object = Cad_Master.objects.all().first()
+        ultimo_historico = Cad_est_finan.objects.filter(fec_final__range=[fecha_inicio, fecha_fin]).last()
+
+        ultimo_historico_tarjeta = 0
+        ultimo_historico_stock_efectivo = 0
+
+        ingreso_acumulado = 0
+        costo_acumulado = 0
+        res_econom_acum = 0
+        saldo_caja_acum = 0
+        res_finan_acum = 0
+
+        if (ultimo_historico):
+
+            print("ultimo")
+            print(ultimo_historico)
+            print(ultimo_historico.año)
+            print(ultimo_historico.fec_final)
+            print(ultimo_historico.fec_final + timedelta(days=1))
+
+            ultimo_historico_tarjeta = ultimo_historico.stock_tarjeta
+            ultimo_historico_stock_efectivo = ultimo_historico.stock_efectivo
+
+            ingreso_acumulado = ultimo_historico.ingreso_acum
+            costo_acumulado = ultimo_historico.costo_acum
+            res_econom_acum = ultimo_historico.res_econom_acum
+            saldo_caja_acum = ultimo_historico.saldo_caja_acum
+            res_finan_acum = ultimo_historico.res_finan_acum
+
+            fecha_inicio = ultimo_historico.fec_final + timedelta(days=1)
+
+
+
+
+
+        ingreso_mes = Cad_ing_ret.objects.filter(ind_ing_egr='I',
+                                                 fecha_trabajo__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_ing_ret'))
+        if ingreso_mes['valor_ing_ret__sum'] == None:
+            ingreso_mes['valor_ing_ret__sum'] = 0
+        costo_tarjeta = Cad_costos.objects.filter(modo_pago_c='T',
+                                                  fecha_trabajo__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_costo'))
+        if costo_tarjeta['valor_costo__sum'] == None:
+            costo_tarjeta['valor_costo__sum'] = 0
+        costo_efectivo = Cad_costos.objects.filter(modo_pago_c='E',
+                                                   fecha_trabajo__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_costo'))
+        if costo_efectivo['valor_costo__sum'] == None:
+            costo_efectivo['valor_costo__sum'] = 0
+        stock_tarjeta = Cad_stock.objects.filter(modo_pago_m='T',
+                                                 fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_insumo'))
+        if stock_tarjeta['valor_insumo__sum'] == None:
+            stock_tarjeta['valor_insumo__sum'] = 0
+        stock_efectivo = Cad_stock.objects.filter(modo_pago_m='E',
+                                                  fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_insumo'))
+        if stock_efectivo['valor_insumo__sum'] == None:
+            stock_efectivo['valor_insumo__sum'] = 0
+        egresos_caja = Cad_ing_ret.objects.filter(ind_ing_egr='E',
+                                                  fecha_trabajo__range=[fecha_inicio, fecha_fin]).aggregate(
+            Sum('valor_ing_ret'))
+        if egresos_caja['valor_ing_ret__sum'] == None:
+            egresos_caja['valor_ing_ret__sum'] = 0
+
+        # ingreso_mes = Cad_ing_ret.objects.filter(ind_ing_egr='I').aggregate(Sum('valor_ing_ret'))
+        # costo_tarjeta = Cad_costos.objects.filter(modo_pago_c = 'T').aggregate(Sum('valor_costo'))
+        # costo_efectivo = Cad_costos.objects.filter(modo_pago_c='E').aggregate(Sum('valor_costo'))
+        # stock_tarjeta = Cad_stock.objects.filter(modo_pago_m='T').aggregate(Sum('valor_insumo'))
+        # stock_efectivo = Cad_stock.objects.filter(modo_pago_m='E').aggregate(Sum('valor_insumo'))
+        # egresos_caja = Cad_ing_ret.objects.filter(ind_ing_egr='E').aggregate(Sum('valor_ing_ret'))
+        # context['ordenes'] = Cad_V_mesas_detalle.objects.filter(cabecera_id=slug).annotate(
+        #     importe=ExpressionWrapper(
+        #         F('cantidad_venta') * F('precio_venta'), output_field=DecimalField(max_digits=12, decimal_places=2)
+        #     )).order_by('linea')
+        # subtotal = 0
+        # for key in context['ordenes']:
+        #     subtotal+=key.importe
+
+
+        context['ingreso_mes'] = ingreso_mes['valor_ing_ret__sum']
+        context['ingreso_mes_acum'] = ingreso_acumulado + ingreso_mes['valor_ing_ret__sum']
+        context['costo_tarjeta'] = costo_tarjeta['valor_costo__sum']
+        context['costo_efectivo'] = costo_efectivo['valor_costo__sum']
+        context['costo_acum'] = costo_acumulado + costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum']
+        context['res_econom_mes'] = ingreso_mes['valor_ing_ret__sum'] - (costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum'])
+        context['res_econom_acum'] = res_econom_acum + (ingreso_mes['valor_ing_ret__sum'] - (costo_tarjeta['valor_costo__sum'] + costo_efectivo['valor_costo__sum']))
+        context['stock_tarjeta'] = stock_tarjeta['valor_insumo__sum']
+        context['stock_efectivo'] = stock_efectivo['valor_insumo__sum']
+        context['saldo_caja_mes'] = ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum'])
+        context['saldo_caja_acum'] = saldo_caja_acum + (ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum']))
+        # context['res_finan_mes'] = (ingreso_mes['valor_ing_ret__sum'] - (egresos_caja['valor_ing_ret__sum'] + costo_tarjeta['valor_costo__sum'])) + (stock_efectivo['valor_insumo__sum']) + (stock_tarjeta['valor_insumo__sum'])
+        context['res_finan_mes'] = context['saldo_caja_mes'] + (stock_tarjeta['valor_insumo__sum'] - ultimo_historico_tarjeta) + (stock_efectivo['valor_insumo__sum'] - ultimo_historico_stock_efectivo)
+        context['res_finan_mes_acum'] = context['saldo_caja_acum'] + stock_tarjeta['valor_insumo__sum'] + stock_efectivo['valor_insumo__sum']
+
+
+
+        return context
+
+class Cad_Cierre_Create(CreateView):
+    model = Cad_est_finan
+    form_class = Cad_est_finan_Form
+    template_name = 'cadastroCostos/cad_cierre_Form.html'
+    success_url = reverse_lazy('betaNegocio:cad_estado_eco_fin')
+
+
 def estado_mesas(request):
     master = Cad_Master.objects.all().first()
     mesas = master.mesas

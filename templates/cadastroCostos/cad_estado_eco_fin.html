@@ -1,0 +1,326 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Estado Economico-Financiero
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+
+
+
+{% block content %}
+
+  <style>
+    .jumbotron
+    {
+        position: relative;
+    }
+    .card
+    {
+        margin: 4px 4px;
+        cursor:pointer;
+
+    }
+    .card-header{
+
+font-size:20pt;
+    }
+
+    </style>
+
+
+
+<form method='GET' enctype='multipart/form-data' id='formId'>
+
+  <table>
+      <tr>
+          <td>
+            <input autocomplete="off" id="reportrange" class="form-control mr-sm-2" type="text" name="q"  value="{{ request.GET.q }}" >
+
+        </td>
+      </tr>
+  </table>
+
+</form>
+
+
+
+<div class="row">
+    {% csrf_token %}
+	<div class="col-md-12" >
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active show" data-toggle="tab" href="#Ingresos">Ingresos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Costos">Costos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Resultado_Economico">Resultado Economico</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Stock">Stock</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Caja">Caja</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Resultado_Financiero">Resultado Financiero</a>
+            </li>
+
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active show" id="Ingresos">
+                 <table class="table table-striped text-center">
+
+
+
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Ingreso Mensual</th>
+                            <th scope="col">Ingreso Acumulado</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.ingreso_mes}}</td>
+                            <td>{{cad_est_finan.ingreso_acum}}</td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+            </div>
+            <div class="tab-pane fade" id="Costos">
+
+                    <table class="table table-striped text-center">
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Costo Tarjeta</th>
+                            <th scope="col">Costo Efectivo</th>
+                            <th scope="col">Costo Acumulado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.costo_tarjeta_mes}}</td>
+                            <td>{{cad_est_finan.costo_efectivo_mes}}</td>
+                            <td>{{cad_est_finan.costo_acum}}</td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+
+            </div>
+            <div class="tab-pane fade" id="Resultado_Economico">
+                <table class="table table-striped text-center">
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Resultado Economico Mensual</th>
+                            <th scope="col">Resultado Economico Acumulado</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.res_econom_mes}}</td>
+                            <td>{{cad_est_finan.res_econom_acum}}</td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+            </div>
+            <div class="tab-pane fade" id="Stock">
+                <table class="table table-striped text-center">
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Stock de Tarjeta</th>
+                            <th scope="col">Stock Efectivo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.stock_tarjeta}}</td>
+                            <td>{{cad_est_finan.stock_efectivo}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+            </div>
+            <div class="tab-pane fade" id="Caja">
+                <table class="table table-striped text-center">
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Saldo Caja Mensual</th>
+                            <th scope="col">Saldo Caja Acumulado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.saldo_caja_mes}}</td>
+                            <td>{{cad_est_finan.saldo_caja_acum}}</td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+            </div>
+            <div class="tab-pane fade" id="Resultado_Financiero">
+                <table class="table table-striped text-center">
+                        <thead>
+                        <tr>
+                            <th scope="col">Cierre</th>
+                            <th scope="col">Resultado Financiero Mensual</th>
+                            <th scope="col">Resultado Financiero Acumulado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if object_list %}
+                        {% for cad_est_finan in object_list %}
+                        <tr class="clickable-row" data-href="#">
+                            <td>{{cad_est_finan.fec_final}}</td>
+                            <td>{{cad_est_finan.res_finan_mes}}</td>
+                            <td>{{cad_est_finan.res_finan_acum}}</td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <h5>No Hay Resultados...</h5>
+                        {% endif %}
+                        </tbody>
+
+
+                </table>
+            </div>
+        </div>
+	</div>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script>
+
+
+    $(function() {
+        $('#reportrange').daterangepicker({
+            <!--startDate: start,-->
+            <!--endDate: end,-->
+            ranges: {
+               'Hoy': [moment(), moment()],
+               'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+               'Ultimos 7 Dias': [moment().subtract(6, 'days'), moment()],
+               'Ultimos 30 Dias': [moment().subtract(29, 'days'), moment()],
+               'Este Mes': [moment().startOf('month'), moment().endOf('month')],
+               'Ultimo Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "format": "MM/DD/YYYY",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Ingresar Rango",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Deciembre"
+                ],
+            "firstDay": 1
+            }
+        });
+    });
+
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+      console.log(picker.startDate.format('YYYY-MM-DD'));
+      console.log(picker.endDate.format('YYYY-MM-DD'));
+      $('#formId').append('<input type="hidden" name="inicio_date" value="'+picker.startDate.format('YYYY-MM-DD')+'" />');
+      $('#formId').append('<input type="hidden" name="fin_date" value="'+picker.endDate.format('YYYY-MM-DD')+'" />');
+      $('#formId').submit();
+    });
+    </script>
+
+
+{% endblock %}

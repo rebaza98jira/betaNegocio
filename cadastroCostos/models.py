@@ -392,8 +392,10 @@ post_save.connect(slug_Save, sender=Cad_V_mesas_detalle)
 """FINANZAS"""
 
 class Cad_est_finan(models.Model):
+
     slug = models.SlugField(unique=True)
-    mes_año = models.CharField(primary_key=True, max_length=8, null=False, blank=False)
+    año = models.SmallIntegerField(null=False, blank=False)
+    mes = models.SmallIntegerField(null=False, blank=False)
     fec_inicio = models.DateField()
     fec_final = models.DateField()
     ingreso_mes = models.DecimalField(max_digits=12, decimal_places=2)
@@ -410,6 +412,11 @@ class Cad_est_finan(models.Model):
     saldo_caja_neto = models.DecimalField(max_digits=12, decimal_places=2)
     res_finan_mes = models.DecimalField(max_digits=12, decimal_places=2)
     res_finan_acum = models.DecimalField(max_digits=12, decimal_places=2)
+    estado_CHOICES = (('A', 'Abierto'), ('C', 'Cerrado'))
+    estado_mes = models.CharField(max_length=1, choices=estado_CHOICES)
+
+    class Meta:
+        unique_together = ["año", "mes"]
 
 pre_save.connect(slug_Save, sender=Cad_est_finan)
 post_save.connect(slug_Save, sender=Cad_est_finan)
