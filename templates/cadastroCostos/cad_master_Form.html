@@ -15,6 +15,7 @@
     {% block cancelar %}
         <a id="someIDA" class = "btn btn-secondary" href="{% url 'betaNegocio:cad_master_listar' %}">Cancelar</a>
     {% endblock %}
+    <button id="RESET" type="submit" name="RESETBTN" class="btn btn-warning">RESET</button>
 
 </form>
 
@@ -32,6 +33,20 @@
             console.log("Enter does nothing")
             return false;
         }
+    });
+
+
+    $('#RESET').on('click', function() {
+            if (confirm('Se borraran las tablas "STOCK" , "COSTO", "MESAS", "CAJA" y "ESTADO FINAN", Desea continuar?')) {
+                console.log(inicial_cantidad_mov)
+                console.log(inicial_id_valor_insumo)
+                $("#id_cantidad_costo").val(inicial_cantidad_mov)
+                $("#id_valor_costo").val(inicial_id_valor_insumo);
+            } else {
+                event.preventDefault();
+            }
+
+
     });
 
     $('form').submit(function() {

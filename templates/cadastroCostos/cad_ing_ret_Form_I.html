@@ -69,7 +69,13 @@
             });
 
         });
-
+    $('#formPost').keydown(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                console.log("Enter does nothing")
+                return false;
+            }
+    });
     $('Form').submit(function() {
         $('#id_ind_ing_egr').removeAttr('disabled');
         document.getElementById("overlay").style.display = "block";

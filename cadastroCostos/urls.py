@@ -61,8 +61,8 @@ urlpatterns = [
     url('nuevoCaja', Cad_ing_ret_Create.as_view(), name='cad_ing_ret_crear'),
     url('verEstadoEcoFin', Cad_Estado_Eco_Fin.as_view(), name='cad_estado_eco_fin'),
     url('cierreEstadoEcoFinActual', Cad_Cierre_Eco_Fin_Actual.as_view(), name='cad_cierre_eco_fin_actual'),
+    url('nuevoEstadoEcoFinCierre', Cad_Cierre_Eco_Fin_Cierre.as_view(), name='cad_cierre_eco_fin_cierre_crear'),
     url('nuevoEstadoEcoFin', Cad_Cierre_Create.as_view(), name='cad_cierre_eco_fin_crear'),
-
 
 
     # url(r'^unidad/nuevo$', UnidadCreate.as_view(), name='unidad_crear'),

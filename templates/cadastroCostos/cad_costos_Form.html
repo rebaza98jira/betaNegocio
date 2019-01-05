@@ -147,10 +147,14 @@
     });
 
     $('#BajaTotal').on('click', function() {
-        console.log(inicial_cantidad_mov)
-        console.log(inicial_id_valor_insumo)
-        $("#id_cantidad_costo").val(inicial_cantidad_mov)
-        $("#id_valor_costo").val(inicial_id_valor_insumo);
+        if (confirm('Se Dara de Baja total al Inventario, Desea continuar?')) {
+            console.log(inicial_cantidad_mov)
+            console.log(inicial_id_valor_insumo)
+            $("#id_cantidad_costo").val(inicial_cantidad_mov)
+            $("#id_valor_costo").val(inicial_id_valor_insumo);
+        } else {
+            event.preventDefault();
+        }
 
 
     });

@@ -1,0 +1,336 @@
+{% extends 'base/base.html' %}
+
+{% block SUBTITLE %}
+    Cierre Economico-Financiero
+{%endblock%}
+{% block searchList %}
+{% endblock %}
+{% block style%}
+{% endblock %}
+
+{% block content %}
+
+<style>
+<!--.statistic {-->
+  <!--margin: 1em 0;-->
+  <!--text-transform: uppercase;-->
+  <!--display: inline-block;-->
+
+  <!--.value {-->
+    <!--font-size: 4em;-->
+    <!--line-height: 1em;-->
+    <!--text-align: center;-->
+
+    <!--&.text {-->
+      <!--font-size: 2em;-->
+      <!--font-weight: bold;-->
+    <!--}-->
+
+    <!--img {-->
+      <!--max-height: .8em;-->
+      <!--vertical-align: baseline;-->
+    <!--}-->
+  <!--}-->
+
+  <!--.label {-->
+    <!--color: inherit;-->
+    <!--display: block;-->
+    <!--font-size: 1em;-->
+    <!--text-align: center;-->
+  <!--}-->
+<!--}-->
+
+<!--.statistic + .statistic {-->
+  <!--margin-left: 1.5em;-->
+<!--}-->
+
+<!--.statistic + .statistic {-->
+  <!--margin-left: 1.5em;-->
+<!--}-->
+
+<!--/*** Horizontal Statistic ***/-->
+<!--.statistic.horizontal {-->
+  <!--.value,-->
+  <!--.label {-->
+    <!--display: inline;-->
+    <!--vertical-align: middle;-->
+  <!--}-->
+<!--}-->
+<!--form{-->
+
+<!--}-->
+.value{
+    font-size: 150%;
+}
+
+.card{
+
+    border-radius: 15px;
+    width:75%
+}
+</style>
+
+<form method='GET' enctype='multipart/form-data' id='formId'>
+
+  <table>
+      <tr>
+          <td>
+            <input autocomplete="off" id="reportrange" class="form-control mr-sm-2" type="text" name="q"  value="{{ request.GET.q }}" >
+
+        </td>
+      </tr>
+  </table>
+
+</form>
+<br>
+
+<h4>Ingresos</h4>
+<hr />
+<div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Mensual</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ingreso_mes}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Acumulado</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ingreso_mes_acum}}</h4>
+                    </div>
+                </div>
+
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+<h4>Costos</h4>
+<hr />
+<div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Tarjeta</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{costo_tarjeta}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Efectivo</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{costo_efectivo}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Acumulado</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{costo_acum}}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+<h4>Resultado Economico</h4>
+<hr />
+    <div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Mensual</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{res_econom_mes}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Acumulado</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{res_econom_acum}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+<h4>Stock</h4>
+<hr />
+    <div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Tarjeta</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{stock_tarjeta}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Efectivo</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{stock_efectivo}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+<h4>Saldo Caja</h4>
+<hr />
+    <div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Mensual</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{saldo_caja_mes}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Acumulado</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{saldo_caja_acum}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+
+<h4>Resultado Financiero</h4>
+<hr />
+    <div class="panel panel-default text-center">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Mensual</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{res_finan_mes}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+
+            <div class="col-sm-4">
+                <div class="card border-info mb-3" style="max-width: 15rem;">
+                    <div class="card-header">Acumulado</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{res_finan_mes_acum}}</h4>
+                    </div>
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.panel-body -->
+</div><!-- /.panel -->
+<hr />
+
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script>
+
+
+    $( document ).ready(function() {
+        $(".card-title").each(function() {
+        var el = $(this)
+        var value = parseFloat(el.text());
+        console.log("VALUE EL")
+            console.log(el)
+        if (value < 0) {
+            console.log("VALUEIFIFI")
+            console.log(value)
+            $(this).parent().parent().removeClass("card border-info mb-3");
+            $(this).parent().parent().addClass("card border-primary mb-3");
+
+        } else {
+            el.css("font-weight", "normal");
+        }
+    });
+
+
+
+    });
+        $(function() {
+        $('#reportrange').daterangepicker({
+            <!--startDate: start,-->
+            <!--endDate: end,-->
+            ranges: {
+               'Ultimos 30 Dias': [moment().subtract(29, 'days'), moment()],
+               'Este Mes': [moment().startOf('month'), moment().endOf('month')],
+               'Ultimo Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "format": "MM/DD/YYYY",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Ingresar Rango",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Deciembre"
+                ],
+            "firstDay": 1
+            }
+        });
+    });
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+      console.log(picker.startDate.format('YYYY-MM-DD'));
+      console.log(picker.endDate.format('YYYY-MM-DD'));
+      $('#formId').append('<input type="hidden" name="inicio_date" value="'+picker.startDate.format('YYYY-MM-DD')+'" />');
+      $('#formId').append('<input type="hidden" name="fin_date" value="'+picker.endDate.format('YYYY-MM-DD')+'" />');
+      $('#formId').submit();
+    });
+    </script>
+
+
+{% endblock %}
