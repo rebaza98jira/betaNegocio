@@ -103,6 +103,9 @@ font-size:20pt;
 
 
                 </table>
+
+                <canvas id="myChart" width="500" height="300"></canvas>
+
             </div>
             <div class="tab-pane fade" id="Costos">
 
@@ -258,13 +261,43 @@ font-size:20pt;
 
 {% endblock %}
 {% block scripts %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script>
+    <!--var labelIngreso = []-->
+    <!--var dataIngreso = []-->
+    <!--{% if object_list %}-->
+    <!--{% for cad_est_finan in object_list %}-->
+            <!--labelIngreso.push("Ingreso Mensual" )-->
+            <!--dataIngreso.push({{cad_est_finan.ingreso_mes}})-->
+            <!--labelIngreso.push("Ingreso Acumulado" )-->
+            <!--dataIngreso.push({{cad_est_finan.ingreso_acum}})-->
+    <!--{% endfor %}-->
+    <!--{% else %}-->
+    <!--{% endif %}-->
 
-
+    <!--var ctx = document.getElementById("myChart").getContext("2d");-->
+    <!--console.log("CHARTS")-->
+    <!--console.log(dataIngreso)-->
+<!--var data = {-->
+    <!--labels: labelIngreso,-->
+    <!--datasets: [-->
+        <!--{-->
+            <!--label: "Site Registrations in the Last 30 Days",-->
+            <!--fillColor: "rgba(220,220,220,0.2)",-->
+            <!--strokeColor: "rgba(220,220,220,1)",-->
+            <!--pointColor: "rgba(220,220,220,1)",-->
+            <!--pointStrokeColor: "#fff",-->
+            <!--pointHighlightFill: "#fff",-->
+            <!--pointHighlightStroke: "rgba(220,220,220,1)",-->
+            <!--data: dataIngreso,-->
+        <!--}-->
+    <!--]-->
+<!--};-->
+<!--var myLineChart = new Chart(ctx).Line(data);-->
     $(function() {
         $('#reportrange').daterangepicker({
             <!--startDate: start,-->

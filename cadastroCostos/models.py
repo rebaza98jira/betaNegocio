@@ -409,7 +409,6 @@ class Cad_est_finan(models.Model):
     stock_efectivo = models.DecimalField(max_digits=12, decimal_places=2)
     saldo_caja_mes = models.DecimalField(max_digits=12, decimal_places=2)
     saldo_caja_acum = models.DecimalField(max_digits=12, decimal_places=2)
-    saldo_caja_neto = models.DecimalField(max_digits=12, decimal_places=2)
     res_finan_mes = models.DecimalField(max_digits=12, decimal_places=2)
     res_finan_acum = models.DecimalField(max_digits=12, decimal_places=2)
     estado_CHOICES = (('A', 'Abierto'), ('C', 'Cerrado'))

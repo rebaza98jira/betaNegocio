@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 
 {% block SUBTITLE %}
-    Cierre Economico-Financiero
+    Cierre Mensual Economico-Financiero
 {%endblock%}
 {% block searchList %}
 {% endblock %}
@@ -78,12 +78,14 @@
             <input autocomplete="off" id="reportrange" class="form-control mr-sm-2" type="text" name="q"  value="{{ request.GET.q }}" >
 
         </td>
+
       </tr>
   </table>
-
 </form>
-<br>
 
+<br>
+<form id="formPost" method="post">
+{% csrf_token %}
 <h4>Ingresos</h4>
 <hr />
 <div class="panel panel-default text-center">
@@ -248,7 +250,10 @@
     </div><!-- /.panel-body -->
 </div><!-- /.panel -->
 <hr />
-
+<div>
+    <button id="CierreMensual" type="submit" name="CIERRE" value="{{context}}" class="btn btn-primary" >Cierre de Mes</button>
+</div>
+</form>
 
 {% endblock %}
 {% block scripts %}
@@ -257,7 +262,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script>
-
 
     $( document ).ready(function() {
         $(".card-title").each(function() {
@@ -281,12 +285,10 @@
     });
         $(function() {
         $('#reportrange').daterangepicker({
-            <!--startDate: start,-->
-            <!--endDate: end,-->
+            <!--startDate: moment().startOf('month'),-->
+            <!--endDate: moment().endOf('month'),-->
             ranges: {
-               'Ultimos 30 Dias': [moment().subtract(29, 'days'), moment()],
                'Este Mes': [moment().startOf('month'), moment().endOf('month')],
-               'Ultimo Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             },
             "locale": {
                 "format": "MM/DD/YYYY",
@@ -329,6 +331,25 @@
       $('#formId').append('<input type="hidden" name="inicio_date" value="'+picker.startDate.format('YYYY-MM-DD')+'" />');
       $('#formId').append('<input type="hidden" name="fin_date" value="'+picker.endDate.format('YYYY-MM-DD')+'" />');
       $('#formId').submit();
+    });
+
+    $('#CierreMensual').click(function (ev, picker) {
+        if (confirm('Se Cerrara el mes con los Inventarios actuales, Desea continuar?')) {
+            var startDate   =  $("#reportrange").data('daterangepicker').startDate.format("YYYY-MM-DD");
+            var endDate     =  $("#reportrange").data('daterangepicker').endDate.format("YYYY-MM-DD");
+            console.log(startDate)
+            console.log(endDate)
+            $('#formPost').append('<input type="hidden" name="inicio_date" value="'+startDate+'" />');
+            $('#formPost').append('<input type="hidden" name="fin_date" value="'+endDate+'" />');
+            console.log("CIERRE PRESIONADO")
+            <!--event.preventDefault();-->
+        } else {
+            event.preventDefault();
+        }
+
+
+
+
     });
     </script>
 
