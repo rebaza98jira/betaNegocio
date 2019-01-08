@@ -814,12 +814,12 @@ class Cad_Cierre_Eco_Fin_Actual(TemplateView):
         if costo_efectivo['valor_costo__sum'] == None:
             costo_efectivo['valor_costo__sum'] = 0
         stock_tarjeta = Cad_stock.objects.filter(modo_pago_m='T',
-                                                 fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+                                                 ).aggregate(
             Sum('valor_insumo'))
         if stock_tarjeta['valor_insumo__sum'] == None:
             stock_tarjeta['valor_insumo__sum'] = 0
         stock_efectivo = Cad_stock.objects.filter(modo_pago_m='E',
-                                                  fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+                                                  ).aggregate(
             Sum('valor_insumo'))
         if stock_efectivo['valor_insumo__sum'] == None:
             stock_efectivo['valor_insumo__sum'] = 0
@@ -927,12 +927,12 @@ class Cad_Cierre_Eco_Fin_Cierre(CreateView):
         if costo_efectivo['valor_costo__sum'] == None:
             costo_efectivo['valor_costo__sum'] = 0
         stock_tarjeta = Cad_stock.objects.filter(modo_pago_m='T',
-                                                 fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+                                                 ).aggregate(
             Sum('valor_insumo'))
         if stock_tarjeta['valor_insumo__sum'] == None:
             stock_tarjeta['valor_insumo__sum'] = 0
         stock_efectivo = Cad_stock.objects.filter(modo_pago_m='E',
-                                                  fec_movimiento__range=[fecha_inicio, fecha_fin]).aggregate(
+                                                  ).aggregate(
             Sum('valor_insumo'))
         if stock_efectivo['valor_insumo__sum'] == None:
             stock_efectivo['valor_insumo__sum'] = 0
