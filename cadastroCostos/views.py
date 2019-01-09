@@ -238,7 +238,7 @@ class Cad_costos_List(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        context = Cad_costos.objects.all().order_by('fecha_trabajo')
+        context = Cad_costos.objects.all().order_by('-fecha_trabajo', '-id')
         return context
 
 
@@ -348,7 +348,7 @@ class Cad_mesas_List(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        context = Cad_V_mesas.objects.all().order_by('fecha_trabajo')
+        context = Cad_V_mesas.objects.all().order_by('-fecha_trabajo','-id')
         return context
 
 
@@ -1349,7 +1349,7 @@ class Cad_ing_ret_List_I(ListView):
 
     def get_queryset(self):
         # query = self.request.GET.get("cod_insumo")
-        context = Cad_ing_ret.objects.filter(ind_ing_egr="I").order_by('fecha_trabajo')
+        context = Cad_ing_ret.objects.filter(ind_ing_egr="I").order_by('-fecha_trabajo','-id')
         return context
 
 
@@ -1374,7 +1374,7 @@ class Cad_ing_ret_List_E(ListView):
 
     def get_queryset(self):
         # query = self.request.GET.get("cod_insumo")
-        context = Cad_ing_ret.objects.filter(ind_ing_egr="E").order_by('fecha_trabajo')
+        context = Cad_ing_ret.objects.filter(ind_ing_egr="E").order_by('-fecha_trabajo','-id')
 
         return context
 
