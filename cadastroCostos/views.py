@@ -705,7 +705,7 @@ class Cad_Estado_Eco_Fin(ListView):
             return context
         else:
             print("QERYDATE3")
-            context = self.model.objects.all()
+            context = self.model.objects.all().order_by('-fec_final','-id')
             return context
 
     # def get_context_data(self, **kwargs):
@@ -882,8 +882,9 @@ class Cad_Cierre_Eco_Fin_Cierre(CreateView):
         print(fecha_inicio)
         print(fecha_fin)
         dictvaluesCierre = {}
-        ultimo_historico = Cad_est_finan.objects.filter(fec_final__range=[fecha_inicio, fecha_fin]).last()
-
+        ultimo_historico = Cad_est_finan.objects.order_by('fec_final').last()
+        # ultimo_historico = Cad_est_finan.objects.filter(id=999).last()
+        print("ULTIMO HISTORICO")
         ultimo_historico_tarjeta = 0
         ultimo_historico_stock_efectivo = 0
 
@@ -894,11 +895,9 @@ class Cad_Cierre_Eco_Fin_Cierre(CreateView):
         res_finan_acum = 0
 
         if (ultimo_historico):
-            print("ultimo")
-            print(ultimo_historico)
-            print(ultimo_historico.año)
+            print("ULTIMO HISTORICO")
+            print(ultimo_historico.fec_inicio)
             print(ultimo_historico.fec_final)
-            print(ultimo_historico.fec_final + timedelta(days=1))
 
             ultimo_historico_tarjeta = ultimo_historico.stock_tarjeta
             ultimo_historico_stock_efectivo = ultimo_historico.stock_efectivo
@@ -910,6 +909,12 @@ class Cad_Cierre_Eco_Fin_Cierre(CreateView):
             res_finan_acum = ultimo_historico.res_finan_acum
 
             fecha_inicio = ultimo_historico.fec_final + timedelta(days=1)
+            datestring = ultimo_historico.fec_inicio
+            dtinicio = datetime.strptime(str(datestring), '%Y-%m-%d')
+            datestring = ultimo_historico.fec_final
+            dtfinal = datetime.strptime(str(datestring), '%Y-%m-%d')
+            dictvaluesCierre['mesCierreAnt'] = ultimo_historico.fec_final
+            dictvaluesCierre['rangoAnt'] = str('%02d' % dtinicio.month) + "/" + str('%02d' % dtinicio.day) + "/" + str(dtinicio.year) + " - " + str(dtfinal.month) + "/" + str(dtfinal.day) + "/" + str(dtfinal.year)
 
         ingreso_mes = Cad_ing_ret.objects.filter(ind_ing_egr='I',
                                                  fecha_trabajo__range=[fecha_inicio, fecha_fin]).aggregate(
